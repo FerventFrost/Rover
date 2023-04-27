@@ -1,7 +1,7 @@
 #ifndef Command_h
 #define Command_h
 
-#include "Command/Sensors.h"
+#include "Sensors.h"
 #include "StructPlan.cpp"
 #include "Arduino.h"
 

@@ -1,40 +1,46 @@
-#include "Serialization.h"
+//
+// Created by BAHER on 5/7/2023.
+//
+
+#include "CSerialiazation.h"
+
+#include "Struct.h"
 
 // DivideShort seperate a short into 2 bytes. eg 0x1234 -> 0x12 0x34.
 // You must Delete the returned pointer after use or else memory leak will occur.
-byte *Serialization::DivideTwoByte(unsigned int value)
+uint8_t *CSerialiazation::DivideTwoByte(uint16_t value)
 {
-    byte *bytes = new byte[2];
-    bytes[0] = (byte)(value >> 8);
-    bytes[1] = (byte)(value);
+    uint8_t *bytes = new uint8_t[2];
+    bytes[0] = (uint8_t)(value >> 8);
+    bytes[1] = (uint8_t)(value);
     return bytes;
 }
 
 // Divide Long seperate a int into 4 bytes. eg 0x12345678 -> 0x12 0x34 0x56 0x78.
 // You must Delete the returned pointer after use or else memory leak will occur.
-byte *Serialization::DivideFourByte(unsigned long value)
+uint8_t *CSerialiazation::DivideFourByte(uint32_t value)
 {
-    byte *bytes = new byte[4];
-    bytes[0] = (byte)(value >> 24);
-    bytes[1] = (byte)(value >> 16);
-    bytes[2] = (byte)(value >> 8);
-    bytes[3] = (byte)(value);
+    uint8_t *bytes = new uint8_t[4];
+    bytes[0] = (uint8_t)(value >> 24);
+    bytes[1] = (uint8_t)(value >> 16);
+    bytes[2] = (uint8_t)(value >> 8);
+    bytes[3] = (uint8_t)(value);
     return bytes;
 }
 
 // Combine Int combine 2 bytes into a short. eg 0x12 0x34 -> 0x1234.
-unsigned int Serialization::CombineTwoByte(byte *value)
+uint16_t CSerialiazation::CombineTwoByte(uint8_t *value)
 {
-    unsigned short result = 0;
+    uint16_t result = 0;
     result = (result << 8) + value[0];
     result = (result << 8) + value[1];
     return result;
 }
 
 // Combine Long combine 4 bytes into a int. eg 0x12 0x34 0x56 0x78 -> 0x12345678.
-unsigned long Serialization::CombineFourByte(byte *value)
+uint32_t CSerialiazation::CombineFourByte(uint8_t *value)
 {
-    unsigned int result = 0;
+    uint32_t result = 0;
     result = (result << 8) + value[0];
     result = (result << 8) + value[1];
     result = (result << 8) + value[2];
@@ -42,7 +48,7 @@ unsigned long Serialization::CombineFourByte(byte *value)
     return result;
 }
 
-bool Serialization::isValidCRC(byte *buffer, unsigned int size, unsigned int CRC)
+bool CSerialiazation::isValidCRC(uint8_t *buffer, uint16_t size, uint16_t CRC)
 {
     int sum = 0;
     for (int i = 0; i < size; i++)
@@ -54,7 +60,7 @@ bool Serialization::isValidCRC(byte *buffer, unsigned int size, unsigned int CRC
     return false;
 }
 
-unsigned int Serialization::CalculateCRC(byte *buffer, unsigned int size)
+uint16_t CSerialiazation::CalculateCRC(uint8_t *buffer, uint16_t size)
 {
     int sum = 0;
     for (int i = 0; i < size; i++)
@@ -66,10 +72,10 @@ unsigned int Serialization::CalculateCRC(byte *buffer, unsigned int size)
 
 // Return a pointer to a buffer that contains the serialized header.
 // You must Delete the returned pointer after use or else memory leak will occur.
-byte *Serialization::SerializeHeader(StructHeader *Header)
+uint8_t *CSerialiazation::SerializeHeader(StructHeader *Header)
 {
-    byte *buffer = new byte[(HEADER_SIZE)];
-    byte *temp = new byte[2];
+    uint8_t *buffer = new uint8_t[(HEADER_SIZE)];
+    uint8_t *temp = new uint8_t[2];
     buffer[0] = Header->Type;
     temp = DivideTwoByte(Header->FrameLength);
     buffer[1] = temp[0];
@@ -86,8 +92,8 @@ byte *Serialization::SerializeHeader(StructHeader *Header)
     return buffer;
 }
 
-// Buffer Size is 21
-StructHeader Serialization::DeserializeHeader(byte buffer[])
+// Buffer Size is 20
+StructHeader CSerialiazation::DeserializeHeader(uint8_t buffer[])
 {
     StructHeader Header;
     Header.Type = static_cast<FrameType>(buffer[0]);
@@ -100,7 +106,7 @@ StructHeader Serialization::DeserializeHeader(byte buffer[])
     return Header;
 }
 
-StructBodyOffline Serialization::DeserializeBodyOffline(byte buffer[])
+StructBodyOffline CSerialiazation::DeserializeBodyOffline(uint8_t buffer[])
 {
     StructBodyOffline Body;
     Body.PlanID = CombineTwoByte(&buffer[0]);
@@ -113,7 +119,7 @@ StructBodyOffline Serialization::DeserializeBodyOffline(byte buffer[])
     return Body;
 }
 
-StructBodyOnline Serialization::DeserializeBodyOnline(byte buffer[])
+StructBodyOnline CSerialiazation::DeserializeBodyOnline(uint8_t buffer[])
 {
     StructBodyOnline Body;
     Body.PlanID = CombineTwoByte(&buffer[0]);
@@ -127,15 +133,15 @@ StructBodyOnline Serialization::DeserializeBodyOnline(byte buffer[])
 
 // Return a pointer to a buffer that contains the serialized header.
 // You must Delete the returned pointer after use or else memory leak will occur.
-byte *Serialization::SerializeBodyResponse(StructBodyRequest *Request)
+uint8_t *CSerialiazation::SerializeBodyResponse(StructBodyRequest *Request)
 {
-    byte *buffer = new byte[(REQUEST_SIZE)];
+    uint8_t *buffer = new uint8_t[(REQUEST_SIZE)];
     buffer[0] = Request->Ack;
     buffer[1] = Request->Acktype;
     return buffer;
 }
 
-StructBodyRequest Serialization::DeserializeBodyRequest(byte buffer[])
+StructBodyRequest CSerialiazation::DeserializeBodyRequest(uint8_t buffer[])
 {
     StructBodyRequest Body;
     Body.Ack = buffer[0];
@@ -145,10 +151,10 @@ StructBodyRequest Serialization::DeserializeBodyRequest(byte buffer[])
 
 // Return a pointer to a buffer that contains the serialized header.
 // You must Delete the returned pointer after use or else memory leak will occur.
-byte *Serialization::SerializeBodyData(StructBodyData *Body)
+uint8_t *CSerialiazation::SerializeBodyData(StructBodyData *Body)
 {
-    byte *buffer = new byte[(SENSOR_DATA_SIZE)];
-    byte *temp = new byte[4];
+    uint8_t *buffer = new uint8_t[(SENSOR_DATA_SIZE)];
+    uint8_t *temp = new uint8_t[4];
     temp = DivideTwoByte(Body->PlanID);
     buffer[0] = temp[0];
     buffer[1] = temp[1];

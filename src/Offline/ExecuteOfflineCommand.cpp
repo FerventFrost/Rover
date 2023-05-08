@@ -5,8 +5,12 @@ ExecuteOfflineCommand::ExecuteOfflineCommand()
 {
 }
 
-void ExecuteOfflineCommand::ExecuteSensorCommand()
+// Return flase if the command ID is not valid
+bool ExecuteOfflineCommand::ExecuteSensorCommand()
 {
+    if (Command->SequenceID > 2)
+        return false;
+
     if (Command->SubSystemID == 0)
     {
         SensorData = Sensors::DHT_Read(Command->CommandID);
@@ -30,18 +34,30 @@ void ExecuteOfflineCommand::ExecuteSensorCommand()
     // Serialize
     // Save to SD card
     delete[] SensorDataSerialization;
+
+    return true;
 }
 
-void ExecuteOfflineCommand::ExecuteCameraCommand()
+// Return flase if the command ID is not valid
+bool ExecuteOfflineCommand::ExecuteCameraCommand()
 {
+    if (Command->SequenceID != 5)
+        return false;
     // Camera
     // Serialize
     // Save to SD card
+
+    return true;
 }
 
-void ExecuteOfflineCommand::ExecuteRoverCommand()
+// Return flase if the command ID is not valid
+bool ExecuteOfflineCommand::ExecuteRoverCommand()
 {
+    if (Command->SequenceID != 7)
+        return false;
     // Rover
+
+    return true;
 }
 
 // Decide which command to execute (Sensor, Camera, Rover)
@@ -50,18 +66,12 @@ void ExecuteOfflineCommand::ExecuteCommand()
 {
     for (int i = 0; i < Command->CommandRepeat; i++)
     {
-        if (Command->SubSystemID <= 3)
-        {
-            ExecuteSensorCommand();
-        }
-        else if (Command->SubSystemID == 3)
-        {
-            ExecuteCameraCommand();
-        }
-        else if (Command->SubSystemID == 4)
-        {
-            ExecuteRoverCommand();
-        }
+        ExecuteSensorCommand();
+
+        ExecuteCameraCommand();
+
+        ExecuteRoverCommand();
+
         delay((Command->Delay * 1000));
     }
 }

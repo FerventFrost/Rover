@@ -24,9 +24,9 @@ private:
     StructBodyData Data;
 
 protected:
-    void ExecuteSensorCommand();
-    void ExecuteCameraCommand();
-    void ExecuteRoverCommand();
+    bool ExecuteSensorCommand();
+    bool ExecuteCameraCommand();
+    bool ExecuteRoverCommand();
     void ExecuteCommand();
 
 public:

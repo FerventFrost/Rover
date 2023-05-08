@@ -7,7 +7,6 @@ ExecuteOfflineCommand::ExecuteOfflineCommand()
 
 void ExecuteOfflineCommand::ExecuteSensorCommand()
 {
-
     if (Command->SubSystemID == 0)
     {
         SensorData = Sensors::DHT_Read(Command->CommandID);
@@ -20,9 +19,17 @@ void ExecuteOfflineCommand::ExecuteSensorCommand()
     {
         SensorData = Sensors::Ultrasonic_Read();
     }
+
+    Data.PlanID = Command->PlanID;
+    Data.SequenceID = Command->SequenceID;
+    Data.Time = Command->TimeBasedCommand;
+    Data.X = SensorData.x;
+    Data.Y = SensorData.y;
+    Data.Z = SensorData.z;
+    SensorDataSerialization = Serialization::SerializeBodyData(&Data);
     // Serialize
-    // SensorDataSerialization = SerializeSensorCommand(Plan->PlanID, Plan->SequenceID, Plan->Time, SensorData, SensorDataZeroPadding);
     // Save to SD card
+    delete[] SensorDataSerialization;
 }
 
 void ExecuteOfflineCommand::ExecuteCameraCommand()
@@ -39,7 +46,7 @@ void ExecuteOfflineCommand::ExecuteRoverCommand()
 
 // Decide which command to execute (Sensor, Camera, Rover)
 // A call back function for the timer
-void ExecuteOfflineCommand::ExecuteCommand(void *arg)
+void ExecuteOfflineCommand::ExecuteCommand()
 {
     for (int i = 0; i < Command->CommandRepeat; i++)
     {

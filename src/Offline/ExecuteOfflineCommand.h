@@ -1,10 +1,10 @@
 #ifndef ExecuteOfflineCommand_h
 #define ExecuteOfflineCommand_h
 
-#include "StructPlan.cpp"
+#include "StructPlan.h"
 #include "Command/Sensors.h"
+#include "Serialization/Serialization.h"
 #include <Arduino.h>
-#include "esp_timer.h"
 
 #define SENSOR_ZERO_PADDING 3
 #define MAX_PLAN_SIZE 15
@@ -17,22 +17,26 @@ class ExecuteOfflineCommand
 {
 private:
     SensorsReading SensorData;
-    byte SensorDataSerialization[MAX_DATA_SIZE];
+    byte *SensorDataSerialization;
     esp_timer_handle_t ExecuteCommandTimer;
     esp_timer_create_args_t timer_args;
     StructBodyOffline *Command;
+    StructBodyData Data;
 
 protected:
     void ExecuteSensorCommand();
     void ExecuteCameraCommand();
     void ExecuteRoverCommand();
+    void ExecuteCommand();
 
 public:
     ExecuteOfflineCommand();
     ~ExecuteOfflineCommand();
 
-    void ExecuteCommand(void *arg);
+    void InitExecution();
     void SetCommand(StructBodyOffline *_Command);
-    void EndPlanExecution();
+    void RetriveCommands();
+    void RetrivePlan();
 };
+
 #endif

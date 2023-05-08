@@ -37,21 +37,20 @@ private:
     static const bool END_TRANSMISSION = true;
     static DHTesp dhtSensor;
 
-protected:
-    static SensorsReading MPU_Accel();
-    static SensorsReading MPU_Gyro();
-    static SensorsReading MPU_Temp();
-
-    static SensorsReading ReadTemp();
-    static SensorsReading ReadHumidity();
-
 public:
     // MPU6050 Sensor
     static void SetupMPU();
+    static SensorsReading MPU_Accel();
+    static SensorsReading MPU_Gyro();
+    static SensorsReading MPU_Temp();
     static SensorsReading MPU_Read(byte CommandID);
+
     // DHT11 Sensor
     static void SetupDHT();
+    static SensorsReading ReadTemp();
+    static SensorsReading ReadHumidity();
     static SensorsReading DHT_Read(byte CommandID);
+
     // Ultrasonic Sensor
     static void SetupUltrasonic();
     static SensorsReading Ultrasonic_Read();

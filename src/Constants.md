@@ -78,5 +78,5 @@ Encryption will be 16 byte size
 4- CommandID -> 1 byte
 5- Delay -> 1 byte
 6- CommandRepeat -> 1 byte
-7- Time -> 4 byte
+7- Time -> 4 byte (Discard)
 7- Zero Padding -> 5 byte

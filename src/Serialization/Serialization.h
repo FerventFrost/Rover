@@ -1,7 +1,7 @@
 #ifndef Serialization_h
 #define Serialization_h
 
-#include "StructPlan.cpp"
+#include "StructPlan.h"
 #include "Arduino.h"
 
 #define HEADER_SIZE 21

@@ -1,3 +1,6 @@
+
+#ifndef STRUCT_BODY_H
+#define STRUCT_BODY_H
 #include "Arduino.h"
 
 // ACK doante by 1
@@ -88,3 +91,5 @@ struct StructBodyImage
     // Camera;
     unsigned int Time;
 };
+
+#endif

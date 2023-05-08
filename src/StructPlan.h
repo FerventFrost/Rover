@@ -3,8 +3,8 @@
 #define STRUCT_BODY_H
 #include "Arduino.h"
 
-// ACK doante by 1
-// nonACK doante by 0
+// ADD ACK doante by 1
+// ADD nonACK doante by 0
 enum AckType
 {
     StartSetup,

@@ -18,8 +18,6 @@ class ExecuteOfflineCommand
 private:
     SensorsReading SensorData;
     byte *SensorDataSerialization;
-    esp_timer_handle_t ExecuteCommandTimer;
-    esp_timer_create_args_t timer_args;
     StructBody *Command;
     StructBodyData Data;
     int64_t Time;

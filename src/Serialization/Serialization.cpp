@@ -83,6 +83,7 @@ byte *Serialization::SerializeHeader(StructHeader *Header)
     {
         buffer[i] = Header->IV[i - 5];
     }
+
     delete[] temp;
     return buffer;
 }
@@ -167,5 +168,7 @@ byte *Serialization::SerializeBodyData(StructBodyData *Body)
     temp = DivideTwoByte(Body->Z);
     buffer[11] = temp[0];
     buffer[12] = temp[1];
+
+    delete[] temp;
     return buffer;
 }

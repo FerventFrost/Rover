@@ -14,17 +14,13 @@ bool ExecuteOfflineCommand::ExecuteSensorCommand()
         return false;
 
     if (Command->SubSystemID == 0)
-    {
         SensorData = Sensors::DHT_Read(Command->CommandID);
-    }
+
     else if (Command->SubSystemID == 1)
-    {
         SensorData = Sensors::MPU_Read(Command->CommandID);
-    }
+
     else if (Command->SubSystemID == 2)
-    {
         SensorData = Sensors::Ultrasonic_Read();
-    }
 
     Data.PlanID = Command->PlanID;
     Data.SequenceID = Command->SequenceID;

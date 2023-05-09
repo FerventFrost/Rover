@@ -10,7 +10,7 @@ class ExecuteOnlineCommand
 {
 private:
     /* data */
-    StructBodyOnline Command;
+    StructBody Command;
 
 public:
     ExecuteOnlineCommand(/* args */);

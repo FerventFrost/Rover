@@ -12,7 +12,7 @@ class PlanValidation
 {
 private:
     /* data */
-    StructBodyOnline Command;
+    StructBody Command;
 
 public:
     PlanValidation(/* args */);

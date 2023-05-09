@@ -3,6 +3,8 @@
 // this Constructor init the timer args
 ExecuteOfflineCommand::ExecuteOfflineCommand()
 {
+    // Set Time when offline phase starts
+    Time = esp_timer_get_time();
 }
 
 // Return flase if the command ID is not valid
@@ -26,7 +28,7 @@ bool ExecuteOfflineCommand::ExecuteSensorCommand()
 
     Data.PlanID = Command->PlanID;
     Data.SequenceID = Command->SequenceID;
-    Data.Time = Command->TimeBasedCommand;
+    Data.Time = (esp_timer_get_time() - Time);
     Data.X = SensorData.x;
     Data.Y = SensorData.y;
     Data.Z = SensorData.z;
@@ -76,7 +78,7 @@ void ExecuteOfflineCommand::ExecuteCommand()
     }
 }
 
-void ExecuteOfflineCommand::SetCommand(StructBodyOffline *_Command)
+void ExecuteOfflineCommand::SetCommand(StructBody *_Command)
 {
     Command = _Command;
 }

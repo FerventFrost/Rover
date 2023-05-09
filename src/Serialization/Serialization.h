@@ -25,8 +25,8 @@ public:
     static byte *SerializeHeader(StructHeader *Header);
     static StructHeader DeserializeHeader(byte buffer[]);
 
-    static StructBodyOffline DeserializeBodyOffline(byte buffer[]);
-    static StructBodyOnline DeserializeBodyOnline(byte buffer[]);
+    static StructBody DeserializeBodyOffline(byte buffer[]);
+    static StructBody DeserializeBodyOnline(byte buffer[]);
 
     static byte *SerializeBodyResponse(StructBodyRequest *Request);
     static StructBodyRequest DeserializeBodyRequest(byte buffer[]);

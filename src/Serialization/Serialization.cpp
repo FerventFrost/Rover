@@ -83,6 +83,7 @@ byte *Serialization::SerializeHeader(StructHeader *Header)
     {
         buffer[i] = Header->IV[i - 5];
     }
+    delete[] temp;
     return buffer;
 }
 
@@ -100,22 +101,21 @@ StructHeader Serialization::DeserializeHeader(byte buffer[])
     return Header;
 }
 
-StructBodyOffline Serialization::DeserializeBodyOffline(byte buffer[])
+StructBody Serialization::DeserializeBodyOffline(byte buffer[])
 {
-    StructBodyOffline Body;
+    StructBody Body;
     Body.PlanID = CombineTwoByte(&buffer[0]);
     Body.SequenceID = buffer[2];
     Body.SubSystemID = buffer[3];
     Body.CommandID = buffer[4];
     Body.Delay = buffer[5];
     Body.CommandRepeat = buffer[6];
-    Body.TimeBasedCommand = CombineFourByte(&buffer[7]);
     return Body;
 }
 
-StructBodyOnline Serialization::DeserializeBodyOnline(byte buffer[])
+StructBody Serialization::DeserializeBodyOnline(byte buffer[])
 {
-    StructBodyOnline Body;
+    StructBody Body;
     Body.PlanID = CombineTwoByte(&buffer[0]);
     Body.SequenceID = buffer[2];
     Body.SubSystemID = buffer[3];

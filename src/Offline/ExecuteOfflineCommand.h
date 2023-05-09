@@ -20,8 +20,9 @@ private:
     byte *SensorDataSerialization;
     esp_timer_handle_t ExecuteCommandTimer;
     esp_timer_create_args_t timer_args;
-    StructBodyOffline *Command;
+    StructBody *Command;
     StructBodyData Data;
+    int64_t Time;
 
 protected:
     bool ExecuteSensorCommand();
@@ -34,7 +35,7 @@ public:
     ~ExecuteOfflineCommand();
 
     void InitExecution();
-    void SetCommand(StructBodyOffline *_Command);
+    void SetCommand(StructBody *_Command);
     void RetriveCommands();
     void RetrivePlan();
 };

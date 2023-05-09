@@ -56,6 +56,15 @@ Encryption will be 16 byte size
 2- ACKType -> 1 byte
 3- Zero Padding -> 14 byte
 
+### Body Deserialization Plan Body
+
+Encryption will be 16 byte size
+
+1. NumberofPlans -> 1 byte
+2. NumberofFrames -> 1 byte
+3. Time -> 4 byte
+4. Zero Padding -> 10 byte
+
 ### Body Deserialization Online Body
 
 Encryption will be 16 byte size

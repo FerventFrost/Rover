@@ -33,34 +33,29 @@ enum FrameType
 struct StructHeader
 {
     FrameType Type;           // Packet Type that indicate Plan is (online, offline, request, resend, data, or image)
-    unsigned int FrameLength; // Frame Length
-    unsigned int CRC;         // Sum of Frame Char
     byte IV[16];              // Initialization Vector
+    unsigned int CRC;         // Sum of Frame Char
+    unsigned int FrameLength; // Frame Length
+};
+
+// This is send from GS to Rover in Accept Plan Phase
+struct StructPlanBody
+{
+    byte NumberofPlans;
+    byte NumberofFrames;
+    unsigned long Time;
 };
 
 // From GS to Rover
-struct StructBodyOffline
+struct StructBody
 {
     /* data */
-    unsigned int PlanID; // Plan Number
-    byte SequenceID;     // Frame Number in Plan
+    byte SequenceID; // Frame Number in Plan
     byte SubSystemID;
     byte CommandID;
     byte Delay;
     byte CommandRepeat;
-    unsigned long TimeBasedCommand;
-};
-
-// From GS to Rover
-struct StructBodyOnline
-{
-    /* data */
     unsigned int PlanID; // Plan Number
-    byte SequenceID;     // Frame Number in Plan
-    byte SubSystemID;
-    byte CommandID;
-    byte Delay;
-    byte CommandRepeat;
 };
 
 // From GS to Rover and Rover to GS
@@ -75,21 +70,21 @@ struct StructBodyRequest
 struct StructBodyData
 {
     /* data */
-    unsigned int PlanID; // Plan Number
     byte SequenceID;     // Frame Number in Plan
-    unsigned long Time;
+    unsigned int PlanID; // Plan Number
     unsigned int X;
     unsigned int Y;
     unsigned int Z;
+    unsigned long Time;
 };
 // From Rover to GS
 struct StructBodyImage
 {
     /* data */
-    short PlanID;    // Plan Number
-    byte SequenceID; // Frame Number in Plan
+    byte SequenceID;     // Frame Number in Plan
+    unsigned int PlanID; // Plan Number
     // Camera;
-    unsigned int Time;
+    unsigned long Time;
 };
 
 #endif

@@ -17,12 +17,10 @@ private:
     static WebServer *server;
     static String ReceivedURL;
     static void HandleData();
-    static bool IsConnected();
-    static char *GetSocketsURL();
 
     static void EventHandler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data);
     void AcceptText();
-    void ExecutionCommand(char *Body, FrameType Type);
+    void ExecuteCommand(char *Body, FrameType Type);
 
 public:
     WebSocket(const char *url);
@@ -34,6 +32,8 @@ public:
     void AESDecryptCBC(char *message, size_t len, char *IV);
 
     static WebServer *InitWebSocketConnectListner();
+    static bool IsConnected();
+    static char *GetSocketsURL();
     // they are not implmented yet
     void Connect(const char *url);
     void Disconnect();

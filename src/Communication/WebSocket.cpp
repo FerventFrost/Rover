@@ -23,9 +23,18 @@ void WebSocket::SendText(char *message, size_t len)
     esp_websocket_client_send_text(client, message, len, portMAX_DELAY);
 }
 
-void WebSocket::SendBinary(char *data, size_t len)
+void WebSocket::SendBinary(const char *data, size_t len, size_t chunkSize)
 {
-    esp_websocket_client_send_bin(client, data, len, portMAX_DELAY);
+    size_t remainingLen = len;
+    size_t offset = 0;
+    while (remainingLen > 0)
+    {
+        size_t CurrentChunkSize = std::min(remainingLen, chunkSize);
+        esp_websocket_client_send_bin(client, &data[offset], CurrentChunkSize, portMAX_DELAY);
+
+        remainingLen -= CurrentChunkSize;
+        offset += CurrentChunkSize;
+    }
 }
 
 void WebSocket::EventHandler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data)

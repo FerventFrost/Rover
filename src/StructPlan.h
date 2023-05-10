@@ -22,10 +22,9 @@ enum AckType
 
 enum FrameType
 {
-    Online,
-    Offline,
+    Plan,
+    Command,
     Request,
-    Response,
     Data,
     Image
 };

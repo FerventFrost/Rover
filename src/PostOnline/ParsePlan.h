@@ -6,6 +6,13 @@
 #include "esp_timer.h"
 
 #define MAX_PLAN_NUMBER 5
+
+struct CallBackArgs
+{
+    ExecuteOfflineCommand *commandExecution;
+    byte PlanNumber;
+};
+
 class PostOnline
 {
 private:

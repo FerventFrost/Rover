@@ -18,6 +18,6 @@ public:
 
     void RoverMovement(byte Buffer[]);
     // this class is not implemented yet
-    void SensorsConfiguration(byte Buffer[]);
+    byte SensorsReadingSpeedConfig(byte Buffer[]);
 };
 #endif

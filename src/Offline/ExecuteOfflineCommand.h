@@ -32,10 +32,10 @@ public:
     ExecuteOfflineCommand();
     ~ExecuteOfflineCommand();
 
-    void InitExecution();
+    void InitExecution(byte PlanNumber);
     void SetCommand(StructBody *_Command);
-    void RetriveCommands();
-    void RetrivePlan();
+    void RetriveCommands(byte CommandNumber);
+    void RetrivePlan(byte PlanNumber);
 };
 
 #endif

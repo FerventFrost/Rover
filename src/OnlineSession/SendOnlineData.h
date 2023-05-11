@@ -14,12 +14,12 @@ private:
     SensorsReading SensorData;
     byte *SensorDataSerialization;
     StructBodyData Data;
-    void SendTemperature();
-    void SendHumidity();
-    void SendAccelerometer();
-    void SendGyroscope();
-    void SendMPUTemperature();
-    void SendUltrasonic();
+    byte *SendTemperature();
+    byte *SendHumidity();
+    byte *SendAccelerometer();
+    byte *SendGyroscope();
+    byte *SendMPUTemperature();
+    byte *SendUltrasonic();
     // this method is not implemented yet
     void SendCamera();
 
@@ -27,6 +27,6 @@ public:
     SendOnlineData();
     ~SendOnlineData();
 
-    void SendData();
+    byte *SendData();
 };
 #endif

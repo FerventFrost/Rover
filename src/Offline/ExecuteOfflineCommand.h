@@ -4,6 +4,8 @@
 #include "StructPlan.h"
 #include "Command/Sensors.h"
 #include "Serialization/Serialization.h"
+#include "Command/Rover.h"
+#include "Command/CameraUART.h"
 #include <Arduino.h>
 #include <EEPROM.h>
 
@@ -28,6 +30,7 @@ protected:
     bool ExecuteSensorCommand();
     bool ExecuteCameraCommand();
     bool ExecuteRoverCommand();
+    bool ExecuteRoverSelfDriving();
 
 public:
     ExecuteOfflineCommand();

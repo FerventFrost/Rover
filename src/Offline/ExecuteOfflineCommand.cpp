@@ -3,21 +3,15 @@
 #include <iomanip>
 #include <iostream>
 
-void printBytesAsHex(const uint8_t *bytes, size_t length)
-{
-    std::cout << std::hex << std::setfill('0');
-    for (size_t i = 0; i < length; ++i)
-    {
-        std::cout << std::setw(2) << static_cast<int>(bytes[i]) << " ";
-    }
-    std::cout << std::dec << std::setfill(' ') << std::endl;
-}
 // this Constructor init the timer args
 ExecuteOfflineCommand::ExecuteOfflineCommand()
 {
     // Set Time when offline phase starts
     CommandAddress = 0;
     Time = esp_timer_get_time();
+
+    // Set Rover Speed
+    RoverMovement::SetSpeed(255);
 }
 
 ExecuteOfflineCommand::~ExecuteOfflineCommand()
@@ -82,9 +76,16 @@ bool ExecuteOfflineCommand::ExecuteSensorCommand()
 // Return flase if the command ID is not valid
 bool ExecuteOfflineCommand::ExecuteCameraCommand()
 {
-    if (Command.SubSystemID != 5)
+    if (Command.SubSystemID != 2)
         return false;
 
+    StructBodyImage Image;
+    Image.PlanID = Command.PlanID;
+    Image.SequenceID = Command.SequenceID;
+    Image.Time = (esp_timer_get_time() - Time);
+    Image.OperationType = 0;
+
+    CameraUART::SendUARTData(&Image);
     // Communicate with Camera through UART
 
     return true;
@@ -93,13 +94,35 @@ bool ExecuteOfflineCommand::ExecuteCameraCommand()
 // Return flase if the command ID is not valid
 bool ExecuteOfflineCommand::ExecuteRoverCommand()
 {
-    if (Command.SubSystemID != 7)
+    if (Command.SubSystemID != 3)
         return false;
     // Rover Movement
 
+    for (int i = 0; i < Command.CommandID; i++)
+    {
+        if (Command.CommandID == 0)
+            RoverMovement::Forward();
+        else if (Command.CommandID == 1)
+            RoverMovement::Backward();
+        else if (Command.CommandID == 2)
+            RoverMovement::Right();
+        else if (Command.CommandID == 3)
+            RoverMovement::Left();
+        else if (Command.CommandID == 4)
+            RoverMovement::Stop();
+
+        delay(Command.Delay * 500);
+    }
     return true;
 }
 
+bool ExecuteOfflineCommand::ExecuteRoverSelfDriving()
+{
+    if (Command.SubSystemID != 4)
+        return false;
+
+    return true;
+}
 // Decide which command to execute (Sensor, Camera, Rover)
 // A call back function for the timer
 void ExecuteOfflineCommand::ExecuteCommand()
@@ -112,6 +135,8 @@ void ExecuteOfflineCommand::ExecuteCommand()
         ExecuteCameraCommand();
 
         ExecuteRoverCommand();
+
+        ExecuteRoverSelfDriving();
 
         delay((Command.Delay * 1000));
     }

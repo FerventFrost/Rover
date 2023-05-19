@@ -12,6 +12,7 @@
 
 #define ULTRASONIC_TRIG_PIN 13
 #define ULTRASONIC_ECHO_PIN 12
+#define DHT_PIN 15
 
 struct SensorsReading
 {
@@ -30,14 +31,14 @@ private:
     static const byte MPU_GYRO_REGISTER = 0x43;
     static const byte MPU_TEMP_REGISTER = 0x41;
     static const byte RESETMPU = 0x00;
-    static const byte DHT_PIN = 15;
     static const byte MPU_ARRAY_SIZE_1 = 6;
     static const byte MPU_ARRAY_SIZE_2 = 2;
     static const bool SEND_STOP = true;
     static const bool END_TRANSMISSION = true;
-    static DHTesp dhtSensor;
 
 public:
+    static DHTesp dhtSensor;
+    Sensors() {}
     // MPU6050 Sensor
     static void SetupMPU();
     static SensorsReading MPU_Accel();

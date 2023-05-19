@@ -97,7 +97,9 @@ void Sensors::SetupDHT()
 SensorsReading Sensors::ReadTemp()
 {
     SensorsReading Result;
-    Result.x = Sensors::dhtSensor.getTemperature();
+    Result.x = dhtSensor.getTemperature();
+    Result.y = 0;
+    Result.z = 0;
     if (Result.x > 255)
         Result.x = 255;
     return Result;
@@ -106,7 +108,9 @@ SensorsReading Sensors::ReadTemp()
 SensorsReading Sensors::ReadHumidity()
 {
     SensorsReading Result;
-    Result.x = Sensors::dhtSensor.getHumidity();
+    Result.x = dhtSensor.getHumidity();
+    Result.y = 0;
+    Result.z = 0;
     if (Result.x > 255)
         Result.x = 255;
     return Result;
@@ -115,8 +119,8 @@ SensorsReading Sensors::ReadHumidity()
 SensorsReading Sensors::DHT_Read(byte CommandID)
 {
     if (CommandID == DHT_TEMP)
-        return Sensors::ReadTemp();
-    return Sensors::ReadHumidity();
+        return ReadTemp();
+    return ReadHumidity();
 }
 
 // Ultrasonic
@@ -136,6 +140,8 @@ SensorsReading Sensors::Ultrasonic_Read()
     digitalWrite(ULTRASONIC_TRIG_PIN, LOW);
     Result.x = pulseIn(ULTRASONIC_ECHO_PIN, HIGH);
     Result.x = Result.x * 0.034 / 2;
+    Result.y = 0;
+    Result.z = 0;
 
     if (Result.x > 255)
         Result.x = 255;

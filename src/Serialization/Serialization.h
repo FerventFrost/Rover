@@ -31,8 +31,11 @@ public:
     static byte *SerializeBodyResponse(StructBodyRequest *Request);
     static StructBodyRequest DeserializeBodyRequest(byte buffer[]);
 
+    static StructPlanBody DeserializePlanBody(byte buffer[]);
+
     static byte *SerializeBodyData(StructBodyData *Data);
 
+    static byte *HeaderBodyConcatenate(byte *Header, byte *Body, unsigned int BodySize);
     // static void SerializeBodyImage(StructBodyImage * body, char * buffer);
 };
 

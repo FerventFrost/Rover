@@ -5,8 +5,8 @@
 byte *Serialization::DivideTwoByte(unsigned int value)
 {
     byte *bytes = new byte[2];
-    bytes[0] = (byte)(value >> 8);
-    bytes[1] = (byte)(value);
+    bytes[0] = (value >> 8) & 0xFF;
+    bytes[1] = (value)&0xFF;
     return bytes;
 }
 
@@ -15,10 +15,10 @@ byte *Serialization::DivideTwoByte(unsigned int value)
 byte *Serialization::DivideFourByte(unsigned long value)
 {
     byte *bytes = new byte[4];
-    bytes[0] = (byte)(value >> 24);
-    bytes[1] = (byte)(value >> 16);
-    bytes[2] = (byte)(value >> 8);
-    bytes[3] = (byte)(value);
+    bytes[0] = (value >> 24) & 0xFF;
+    bytes[1] = (value >> 16) & 0xFF;
+    bytes[2] = (value >> 8) & 0xFF;
+    bytes[3] = (value)&0xFF;
     return bytes;
 }
 
@@ -149,26 +149,55 @@ StructBodyRequest Serialization::DeserializeBodyRequest(byte buffer[])
 byte *Serialization::SerializeBodyData(StructBodyData *Body)
 {
     byte *buffer = new byte[(SENSOR_DATA_SIZE)];
-    byte *temp = new byte[4];
+    byte *temp;
     temp = DivideTwoByte(Body->PlanID);
     buffer[0] = temp[0];
     buffer[1] = temp[1];
+    delete[] temp;
     buffer[2] = Body->SequenceID;
     temp = DivideFourByte(Body->Time);
     buffer[3] = temp[0];
     buffer[4] = temp[1];
     buffer[5] = temp[2];
     buffer[6] = temp[3];
+    delete[] temp;
     temp = DivideTwoByte(Body->X);
     buffer[7] = temp[0];
     buffer[8] = temp[1];
+    delete[] temp;
     temp = DivideTwoByte(Body->Y);
     buffer[9] = temp[0];
     buffer[10] = temp[1];
+    delete[] temp;
     temp = DivideTwoByte(Body->Z);
     buffer[11] = temp[0];
     buffer[12] = temp[1];
-
     delete[] temp;
+
+    return buffer;
+}
+
+StructPlanBody Serialization::DeserializePlanBody(byte buffer[])
+{
+    StructPlanBody Body;
+    Body.NumberofPlans = buffer[0];
+    Body.NumberofFrames = buffer[1];
+    Body.Time = CombineFourByte(&buffer[2]);
+    return Body;
+}
+// Return a pointer to a buffer that contains the serialized Concat.
+// You must Delete the returned pointer after use or else memory leak will occur.
+byte *Serialization::HeaderBodyConcatenate(byte *Header, byte *Body, unsigned int BodySize)
+{
+    byte *buffer = new byte[(HEADER_SIZE + BodySize)];
+    for (int i = 0; i < HEADER_SIZE; i++)
+    {
+        buffer[i] = Header[i];
+    }
+    for (int i = 0; i < BodySize; i++)
+    {
+        buffer[i + HEADER_SIZE] = Body[i];
+    }
+
     return buffer;
 }

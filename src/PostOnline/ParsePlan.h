@@ -10,7 +10,7 @@
 struct CallBackArgs
 {
     ExecuteOfflineCommand *commandExecution;
-    byte PlanNumber;
+    StructPlanBody *PlanData;
 };
 
 class PostOnline
@@ -19,12 +19,13 @@ private:
     /* data */
     esp_timer_handle_t PlanTimer[MAX_PLAN_NUMBER];
     esp_timer_create_args_t PlanTimerArgs;
-    ExecuteOfflineCommand commandExecution;
+    StructPlanBody *Plan;
+    ExecuteOfflineCommand *commandExecution;
 
 public:
-    PostOnline(ExecuteOfflineCommand Execute);
+    PostOnline(StructPlanBody *PlanArr, byte PlanNumber, ExecuteOfflineCommand *Execute);
     ~PostOnline();
-    void CreatePlanTimer(byte PlanNumber, unsigned long intervals[]);
+    void CreatePlanTimer(byte PlanNumber);
     static void IRAM_ATTR PlanCallback(void *arg);
 };
 

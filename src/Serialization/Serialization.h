@@ -7,6 +7,7 @@
 #define HEADER_SIZE 21
 #define REQUEST_SIZE 2
 #define SENSOR_DATA_SIZE 13
+#define IMAGE_SIZE 8
 
 class Serialization
 {
@@ -36,7 +37,8 @@ public:
     static byte *SerializeBodyData(StructBodyData *Data);
 
     static byte *HeaderBodyConcatenate(byte *Header, byte *Body, unsigned int BodySize);
-    // static void SerializeBodyImage(StructBodyImage * body, char * buffer);
+
+    static byte *SerializeBodyImage(StructBodyImage *body);
 };
 
 #endif

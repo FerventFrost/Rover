@@ -185,6 +185,29 @@ StructPlanBody Serialization::DeserializePlanBody(byte buffer[])
     Body.Time = CombineFourByte(&buffer[2]);
     return Body;
 }
+
+// Return a pointer to a buffer that contains the serialized Image Config Data that will be send by UART.
+// You must Delete the returned pointer after use or else memory leak will occur.
+byte *Serialization::SerializeBodyImage(StructBodyImage *body)
+{
+    byte *buffer = new byte[IMAGE_SIZE];
+    byte *temp;
+    buffer[0] = body->SequenceID;
+    buffer[1] = body->OperationType;
+    temp = DivideTwoByte(body->PlanID);
+    buffer[2] = temp[0];
+    buffer[3] = temp[1];
+    delete[] temp;
+    temp = DivideFourByte(body->Time);
+    buffer[4] = temp[0];
+    buffer[5] = temp[1];
+    buffer[6] = temp[2];
+    buffer[7] = temp[3];
+    delete[] temp;
+
+    return buffer;
+}
+
 // Return a pointer to a buffer that contains the serialized Concat.
 // You must Delete the returned pointer after use or else memory leak will occur.
 byte *Serialization::HeaderBodyConcatenate(byte *Header, byte *Body, unsigned int BodySize)

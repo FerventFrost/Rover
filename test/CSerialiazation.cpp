@@ -106,22 +106,9 @@ StructHeader CSerialiazation::DeserializeHeader(uint8_t buffer[])
     return Header;
 }
 
-StructBodyOffline CSerialiazation::DeserializeBodyOffline(uint8_t buffer[])
+StructBody CSerialiazation::DeserializeBody(uint8_t buffer[])
 {
-    StructBodyOffline Body;
-    Body.PlanID = CombineTwoByte(&buffer[0]);
-    Body.SequenceID = buffer[2];
-    Body.SubSystemID = buffer[3];
-    Body.CommandID = buffer[4];
-    Body.Delay = buffer[5];
-    Body.CommandRepeat = buffer[6];
-    Body.TimeBasedCommand = CombineFourByte(&buffer[7]);
-    return Body;
-}
-
-StructBodyOnline CSerialiazation::DeserializeBodyOnline(uint8_t buffer[])
-{
-    StructBodyOnline Body;
+    StructBody Body;
     Body.PlanID = CombineTwoByte(&buffer[0]);
     Body.SequenceID = buffer[2];
     Body.SubSystemID = buffer[3];
@@ -173,5 +160,22 @@ uint8_t *CSerialiazation::SerializeBodyData(StructBodyData *Body)
     temp = DivideTwoByte(Body->Z);
     buffer[11] = temp[0];
     buffer[12] = temp[1];
+    return buffer;
+}
+
+// Return a pointer to a buffer that contains the serialized Concat.
+// You must Delete the returned pointer after use or else memory leak will occur.
+uint8_t *CSerialiazation::HeaderBodyConcatenate(uint8_t *Header, uint8_t *Body, unsigned int BodySize)
+{
+    uint8_t *buffer = new uint8_t[(HEADER_SIZE + BodySize)];
+    for (int i = 0; i < HEADER_SIZE; i++)
+    {
+        buffer[i] = Header[i];
+    }
+    for (int i = 0; i < BodySize; i++)
+    {
+        buffer[i + HEADER_SIZE] = Body[i];
+    }
+
     return buffer;
 }

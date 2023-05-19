@@ -12,8 +12,11 @@
 #define REQUEST_SIZE 2
 #define IVSize 16
 #define SENSOR_DATA_SIZE 13
+#define SENSOR_ZERO_PADDING 3
+#define BODY_SIZE 7
 
-class CSerialiazation {
+class CSerialiazation
+{
 private:
     /* data */
 public:
@@ -29,14 +32,14 @@ public:
     static uint8_t *SerializeHeader(StructHeader *Header);
     static StructHeader DeserializeHeader(uint8_t buffer[]);
 
-    static StructBodyOffline DeserializeBodyOffline(uint8_t buffer[]);
-    static StructBodyOnline DeserializeBodyOnline(uint8_t buffer[]);
+    static StructBody DeserializeBody(uint8_t buffer[]);
 
     static uint8_t *SerializeBodyResponse(StructBodyRequest *Request);
     static StructBodyRequest DeserializeBodyRequest(uint8_t buffer[]);
 
     static uint8_t *SerializeBodyData(StructBodyData *Data);
+
+    static uint8_t *HeaderBodyConcatenate(uint8_t *Header, uint8_t *Body, unsigned int BodySize);
 };
 
-
-#endif //TEST_CSERIALIAZATION_H
+#endif // TEST_CSERIALIAZATION_H

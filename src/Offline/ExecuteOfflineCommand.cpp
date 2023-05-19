@@ -98,21 +98,17 @@ bool ExecuteOfflineCommand::ExecuteRoverCommand()
         return false;
     // Rover Movement
 
-    for (int i = 0; i < Command.CommandID; i++)
-    {
-        if (Command.CommandID == 0)
-            RoverMovement::Forward();
-        else if (Command.CommandID == 1)
-            RoverMovement::Backward();
-        else if (Command.CommandID == 2)
-            RoverMovement::Right();
-        else if (Command.CommandID == 3)
-            RoverMovement::Left();
-        else if (Command.CommandID == 4)
-            RoverMovement::Stop();
+    if (Command.CommandID == 0)
+        RoverMovement::Forward();
+    else if (Command.CommandID == 1)
+        RoverMovement::Backward();
+    else if (Command.CommandID == 2)
+        RoverMovement::Right();
+    else if (Command.CommandID == 3)
+        RoverMovement::Left();
+    else if (Command.CommandID == 4)
+        RoverMovement::Stop();
 
-        delay(Command.Delay * 500);
-    }
     return true;
 }
 
@@ -123,6 +119,7 @@ bool ExecuteOfflineCommand::ExecuteRoverSelfDriving()
 
     return true;
 }
+
 // Decide which command to execute (Sensor, Camera, Rover)
 // A call back function for the timer
 void ExecuteOfflineCommand::ExecuteCommand()
@@ -146,8 +143,12 @@ void ExecuteOfflineCommand::RetriveCommands()
 {
     // Retrive Commands from SD card
     // SetCommand(Commands[CommandNumber]);
-    EEPROM.get(CommandAddress, Command);
-    CommandAddress += sizeof(StructBody);
+    Command = ESPFlash::RetriveCommands();
+}
+
+void ExecuteOfflineCommand::ResetCommandAddress()
+{
+    ESPFlash::SetReadAddress(0);
 }
 
 void ExecuteOfflineCommand::InitExecution(StructPlanBody *Plan)

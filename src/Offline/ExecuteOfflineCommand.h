@@ -6,8 +6,8 @@
 #include "Serialization/Serialization.h"
 #include "Command/Rover.h"
 #include "Command/CameraUART.h"
+#include "Command/ESPFlash.h"
 #include <Arduino.h>
-#include <EEPROM.h>
 
 #define SENSOR_ZERO_PADDING 3
 #define MAX_PLAN_SIZE 15
@@ -36,6 +36,7 @@ public:
     ExecuteOfflineCommand();
     ~ExecuteOfflineCommand();
 
+    void ResetCommandAddress();
     void ExecuteCommand();
     void InitExecution(StructPlanBody *Plan);
     void RetriveCommands();

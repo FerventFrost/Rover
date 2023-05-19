@@ -3,6 +3,7 @@
 
 #include "StructPlan.h"
 #include "Serialization/Serialization.h"
+#include "Command/Rover.h"
 #include "Arduino.h"
 
 // Assocaited with rover movement and sensors configuration

@@ -4,16 +4,18 @@
 #include "StructPlan.h"
 #include "Command/Sensors.h"
 #include "Serialization/Serialization.h"
+#include "Command/CameraUART.h"
 #include <Arduino.h>
 
 #define SENSOR_ZERO_PADDING 3
+#define DATA_SIZE 13
 
 class SendOnlineData
 {
 private:
     SensorsReading SensorData;
-    byte *SensorDataSerialization;
     StructBodyData Data;
+
     byte *SendTemperature();
     byte *SendHumidity();
     byte *SendAccelerometer();
@@ -21,12 +23,12 @@ private:
     byte *SendMPUTemperature();
     byte *SendUltrasonic();
     // this method is not implemented yet
-    void SendCamera();
 
 public:
     SendOnlineData();
     ~SendOnlineData();
 
-    byte *SendData();
+    void SendCamera();
+    byte *SendData(byte ReadingsTurn);
 };
 #endif

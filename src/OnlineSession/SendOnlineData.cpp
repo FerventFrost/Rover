@@ -11,6 +11,12 @@ SendOnlineData::~SendOnlineData()
 // use must delete the returned pointer
 byte *SendOnlineData::SendTemperature()
 {
+    // Init Array
+    byte *SensorDataSerialization = new byte[DATA_SIZE + SENSOR_ZERO_PADDING];
+    byte *HeaderSerialization = new byte[HEADER_SIZE];
+    byte *Concat = new byte[HEADER_SIZE + DATA_SIZE + SENSOR_ZERO_PADDING];
+
+    // Body Data
     SensorData = Sensors::ReadTemp();
     Data.PlanID = 0;
     Data.SequenceID = 0;
@@ -19,14 +25,40 @@ byte *SendOnlineData::SendTemperature()
     Data.Y = 0;
     Data.Z = 0;
     SensorDataSerialization = Serialization::SerializeBodyData(&Data);
-    // Serialize
-    // Save to SD card
-    return SensorDataSerialization;
+    // Data Zero Padding
+    for (int i = 0; i < SENSOR_ZERO_PADDING; i++)
+        SensorDataSerialization[DATA_SIZE + i] = 0;
+
+    // Header Data
+    StructHeader Header;
+    Header.Type = FrameType::Data;
+    Header.FrameLength = (DATA_SIZE + SENSOR_ZERO_PADDING);
+    Header.CRC = Serialization::CalculateCRC(SensorDataSerialization, DATA_SIZE);
+    // Data IV
+    for (int i = 0; i < 16; i++)
+    {
+        Header.IV[i] = 0;
+    }
+    HeaderSerialization = Serialization::SerializeHeader(&Header);
+
+    // Concat Them
+    Concat = Serialization::HeaderBodyConcatenate(HeaderSerialization, SensorDataSerialization, DATA_SIZE + SENSOR_ZERO_PADDING);
+
+    delete[] SensorDataSerialization;
+    delete[] HeaderSerialization;
+
+    return Concat;
 }
 
 // use must delete the returned pointer
 byte *SendOnlineData::SendHumidity()
 {
+    // Init Array
+    byte *SensorDataSerialization = new byte[DATA_SIZE + SENSOR_ZERO_PADDING];
+    byte *HeaderSerialization = new byte[HEADER_SIZE];
+    byte *Concat = new byte[HEADER_SIZE + DATA_SIZE + SENSOR_ZERO_PADDING];
+
+    // Body Data
     SensorData = Sensors::ReadHumidity();
     Data.PlanID = 0;
     Data.SequenceID = 1;
@@ -35,14 +67,40 @@ byte *SendOnlineData::SendHumidity()
     Data.Y = 0;
     Data.Z = 0;
     SensorDataSerialization = Serialization::SerializeBodyData(&Data);
-    // Serialize
-    // Save to SD card
-    return SensorDataSerialization;
+    // Data Zero Padding
+    for (int i = 0; i < SENSOR_ZERO_PADDING; i++)
+        SensorDataSerialization[DATA_SIZE + i] = 0;
+
+    // Header Data
+    StructHeader Header;
+    Header.Type = FrameType::Data;
+    Header.FrameLength = (DATA_SIZE + SENSOR_ZERO_PADDING);
+    Header.CRC = Serialization::CalculateCRC(SensorDataSerialization, DATA_SIZE);
+    // Data IV
+    for (int i = 0; i < 16; i++)
+    {
+        Header.IV[i] = 0;
+    }
+    HeaderSerialization = Serialization::SerializeHeader(&Header);
+
+    // Concat Them
+    Concat = Serialization::HeaderBodyConcatenate(HeaderSerialization, SensorDataSerialization, DATA_SIZE + SENSOR_ZERO_PADDING);
+
+    delete[] SensorDataSerialization;
+    delete[] HeaderSerialization;
+
+    return Concat;
 }
 
 // use must delete the returned pointer
 byte *SendOnlineData::SendAccelerometer()
 {
+    // Init Array
+    byte *SensorDataSerialization = new byte[DATA_SIZE + SENSOR_ZERO_PADDING];
+    byte *HeaderSerialization = new byte[HEADER_SIZE];
+    byte *Concat = new byte[HEADER_SIZE + DATA_SIZE + SENSOR_ZERO_PADDING];
+
+    // Body Data
     SensorData = Sensors::MPU_Accel();
     Data.PlanID = 0;
     Data.SequenceID = 0;
@@ -51,14 +109,40 @@ byte *SendOnlineData::SendAccelerometer()
     Data.Y = SensorData.y;
     Data.Z = SensorData.z;
     SensorDataSerialization = Serialization::SerializeBodyData(&Data);
-    // Serialize
-    // Save to SD card
-    return SensorDataSerialization;
+    // Data Zero Padding
+    for (int i = 0; i < SENSOR_ZERO_PADDING; i++)
+        SensorDataSerialization[DATA_SIZE + i] = 0;
+
+    // Header Data
+    StructHeader Header;
+    Header.Type = FrameType::Data;
+    Header.FrameLength = (DATA_SIZE + SENSOR_ZERO_PADDING);
+    Header.CRC = Serialization::CalculateCRC(SensorDataSerialization, DATA_SIZE);
+    // Data IV
+    for (int i = 0; i < 16; i++)
+    {
+        Header.IV[i] = 0;
+    }
+    HeaderSerialization = Serialization::SerializeHeader(&Header);
+
+    // Concat Them
+    Concat = Serialization::HeaderBodyConcatenate(HeaderSerialization, SensorDataSerialization, DATA_SIZE + SENSOR_ZERO_PADDING);
+
+    delete[] SensorDataSerialization;
+    delete[] HeaderSerialization;
+
+    return Concat;
 }
 
 // use must delete the returned pointer
 byte *SendOnlineData::SendGyroscope()
 {
+    // Init Array
+    byte *SensorDataSerialization = new byte[DATA_SIZE + SENSOR_ZERO_PADDING];
+    byte *HeaderSerialization = new byte[HEADER_SIZE];
+    byte *Concat = new byte[HEADER_SIZE + DATA_SIZE + SENSOR_ZERO_PADDING];
+
+    // Body Data
     SensorData = Sensors::MPU_Gyro();
     Data.PlanID = 0;
     Data.SequenceID = 1;
@@ -67,14 +151,40 @@ byte *SendOnlineData::SendGyroscope()
     Data.Y = SensorData.y;
     Data.Z = SensorData.z;
     SensorDataSerialization = Serialization::SerializeBodyData(&Data);
-    // Serialize
-    // Save to SD card
-    return SensorDataSerialization;
+    // Data Zero Padding
+    for (int i = 0; i < SENSOR_ZERO_PADDING; i++)
+        SensorDataSerialization[DATA_SIZE + i] = 0;
+
+    // Header Data
+    StructHeader Header;
+    Header.Type = FrameType::Data;
+    Header.FrameLength = (DATA_SIZE + SENSOR_ZERO_PADDING);
+    Header.CRC = Serialization::CalculateCRC(SensorDataSerialization, DATA_SIZE);
+    // Data IV
+    for (int i = 0; i < 16; i++)
+    {
+        Header.IV[i] = 0;
+    }
+    HeaderSerialization = Serialization::SerializeHeader(&Header);
+
+    // Concat Them
+    Concat = Serialization::HeaderBodyConcatenate(HeaderSerialization, SensorDataSerialization, DATA_SIZE + SENSOR_ZERO_PADDING);
+
+    delete[] SensorDataSerialization;
+    delete[] HeaderSerialization;
+
+    return Concat;
 }
 
 // use must delete the returned pointer
 byte *SendOnlineData::SendMPUTemperature()
 {
+    // Init Array
+    byte *SensorDataSerialization = new byte[DATA_SIZE + SENSOR_ZERO_PADDING];
+    byte *HeaderSerialization = new byte[HEADER_SIZE];
+    byte *Concat = new byte[HEADER_SIZE + DATA_SIZE + SENSOR_ZERO_PADDING];
+
+    // Body Data
     SensorData = Sensors::MPU_Temp();
     Data.PlanID = 0;
     Data.SequenceID = 2;
@@ -83,14 +193,40 @@ byte *SendOnlineData::SendMPUTemperature()
     Data.Y = 0;
     Data.Z = 0;
     SensorDataSerialization = Serialization::SerializeBodyData(&Data);
-    // Serialize
-    // Save to SD card
-    return SensorDataSerialization;
+    // Data Zero Padding
+    for (int i = 0; i < SENSOR_ZERO_PADDING; i++)
+        SensorDataSerialization[DATA_SIZE + i] = 0;
+
+    // Header Data
+    StructHeader Header;
+    Header.Type = FrameType::Data;
+    Header.FrameLength = (DATA_SIZE + SENSOR_ZERO_PADDING);
+    Header.CRC = Serialization::CalculateCRC(SensorDataSerialization, DATA_SIZE);
+    // Data IV
+    for (int i = 0; i < 16; i++)
+    {
+        Header.IV[i] = 0;
+    }
+    HeaderSerialization = Serialization::SerializeHeader(&Header);
+
+    // Concat Them
+    Concat = Serialization::HeaderBodyConcatenate(HeaderSerialization, SensorDataSerialization, DATA_SIZE + SENSOR_ZERO_PADDING);
+
+    delete[] SensorDataSerialization;
+    delete[] HeaderSerialization;
+
+    return Concat;
 }
 
 // use must delete the returned pointer
 byte *SendOnlineData::SendUltrasonic()
 {
+    // Init Array
+    byte *SensorDataSerialization = new byte[DATA_SIZE + SENSOR_ZERO_PADDING];
+    byte *HeaderSerialization = new byte[HEADER_SIZE];
+    byte *Concat = new byte[HEADER_SIZE + DATA_SIZE + SENSOR_ZERO_PADDING];
+
+    // Body Data
     SensorData = Sensors::Ultrasonic_Read();
     Data.PlanID = 0;
     Data.SequenceID = 0;
@@ -99,43 +235,67 @@ byte *SendOnlineData::SendUltrasonic()
     Data.Y = 0;
     Data.Z = 0;
     SensorDataSerialization = Serialization::SerializeBodyData(&Data);
-    // Serialize
-    // Save to SD card
-    return SensorDataSerialization;
+    // Data Zero Padding
+    for (int i = 0; i < SENSOR_ZERO_PADDING; i++)
+        SensorDataSerialization[DATA_SIZE + i] = 0;
+
+    // Header Data
+    StructHeader Header;
+    Header.Type = FrameType::Data;
+    Header.FrameLength = (DATA_SIZE + SENSOR_ZERO_PADDING);
+    Header.CRC = Serialization::CalculateCRC(SensorDataSerialization, DATA_SIZE);
+    // Data IV
+    for (int i = 0; i < 16; i++)
+    {
+        Header.IV[i] = 0;
+    }
+    HeaderSerialization = Serialization::SerializeHeader(&Header);
+
+    // Concat Them
+    Concat = Serialization::HeaderBodyConcatenate(HeaderSerialization, SensorDataSerialization, DATA_SIZE + SENSOR_ZERO_PADDING);
+
+    delete[] SensorDataSerialization;
+    delete[] HeaderSerialization;
+
+    return Concat;
+}
+
+// Send Camera Config Data Using UART
+void SendOnlineData::SendCamera()
+{
+    StructBodyImage Image;
+    Image.PlanID = 0;
+    Image.SequenceID = 0;
+    Image.Time = esp_timer_get_time();
+    Image.OperationType = 1;
+
+    CameraUART::SendUARTData(&Image);
 }
 
 // use must delete the returned pointer static unsigned int i = 0; is used to keep track of the last sent data and using static keyword to keep the value of i between function calls
-byte *SendOnlineData::SendData()
+byte *SendOnlineData::SendData(byte ReadingsTurn)
 {
-    static unsigned int i = 0;
-    switch (i)
+    switch (ReadingsTurn)
     {
     case 0:
-        i++;
         return SendTemperature();
 
     case 1:
-        i++;
         return SendHumidity();
 
     case 2:
-        i++;
         return SendAccelerometer();
 
     case 3:
-        i++;
         return SendGyroscope();
 
     case 4:
-        i++;
         return SendMPUTemperature();
 
     case 5:
-        i++;
         return SendUltrasonic();
 
     default:
-        i++;
         return SendTemperature();
     }
 }

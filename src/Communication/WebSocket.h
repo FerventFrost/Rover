@@ -6,6 +6,7 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include "esp_websocket_client.h"
+#include <esp_log.h>
 // #include <AsyncTCP.h>
 // #include <ESPAsyncWebServer.h>
 
@@ -14,7 +15,7 @@ class WebSocket
 private:
     esp_websocket_client_handle_t client;
     // this part is for First Requests that indicate the GS try to connect to Rover
-    static WebServer *server;
+    // static WebServer *server;
     static String ReceivedURL;
     static void HandleData();
 
@@ -31,15 +32,15 @@ public:
     void AESEncryptCBC(char *message, size_t len, char *IV);
     void AESDecryptCBC(char *message, size_t len, char *IV);
 
-    static WebServer *InitWebSocketConnectListner();
-    static bool IsConnected();
-    static char *GetSocketsURL();
+    // static WebServer *InitWebSocketConnectListner();
+    // static bool IsConnected();
+    // static char *GetSocketsURL();
     // they are not implmented yet
-    void Connect(const char *url);
-    void Disconnect();
-    void onMessage(void (*callback)(String message));
-    void onOpen(void (*callback)());
-    void onClose(void (*callback)());
-    void onError(void (*callback)(String message));
+    // void Connect(const char *url);
+    // void Disconnect();
+    // void onMessage(void (*callback)(String message));
+    // void onOpen(void (*callback)());
+    // void onClose(void (*callback)());
+    // void onError(void (*callback)(String message));
 };
 #endif

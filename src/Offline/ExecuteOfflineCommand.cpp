@@ -1,37 +1,80 @@
 #include "ExecuteOfflineCommand.h"
 
+#include <iomanip>
+#include <iostream>
+
+void printBytesAsHex(const uint8_t *bytes, size_t length)
+{
+    std::cout << std::hex << std::setfill('0');
+    for (size_t i = 0; i < length; ++i)
+    {
+        std::cout << std::setw(2) << static_cast<int>(bytes[i]) << " ";
+    }
+    std::cout << std::dec << std::setfill(' ') << std::endl;
+}
 // this Constructor init the timer args
 ExecuteOfflineCommand::ExecuteOfflineCommand()
 {
     // Set Time when offline phase starts
+    CommandAddress = 0;
     Time = esp_timer_get_time();
+}
+
+ExecuteOfflineCommand::~ExecuteOfflineCommand()
+{
 }
 
 // Return flase if the command ID is not valid
 bool ExecuteOfflineCommand::ExecuteSensorCommand()
 {
-    if (Command->SequenceID > 2)
+    if (Command.SubSystemID > 2)
         return false;
 
-    if (Command->SubSystemID == 0)
-        SensorData = Sensors::DHT_Read(Command->CommandID);
+    if (Command.SubSystemID == 0)
+        SensorData = Sensors::DHT_Read(Command.CommandID);
 
-    else if (Command->SubSystemID == 1)
-        SensorData = Sensors::MPU_Read(Command->CommandID);
+    else if (Command.SubSystemID == 1)
+        SensorData = Sensors::MPU_Read(Command.CommandID);
 
-    else if (Command->SubSystemID == 2)
+    else if (Command.SubSystemID == 2)
         SensorData = Sensors::Ultrasonic_Read();
 
-    Data.PlanID = Command->PlanID;
-    Data.SequenceID = Command->SequenceID;
+    // Init Array
+    byte *SensorDataSerialization = new byte[DATA_SIZE + SENSOR_ZERO_PADDING];
+    byte *HeaderSerialization = new byte[HEADER_SIZE];
+    byte *Concat = new byte[HEADER_SIZE + DATA_SIZE + SENSOR_ZERO_PADDING];
+
+    // Body Data
+    Data.PlanID = Command.PlanID;
+    Data.SequenceID = Command.SequenceID;
     Data.Time = (esp_timer_get_time() - Time);
     Data.X = SensorData.x;
     Data.Y = SensorData.y;
     Data.Z = SensorData.z;
     SensorDataSerialization = Serialization::SerializeBodyData(&Data);
+    for (int i = 0; i < SENSOR_ZERO_PADDING; i++)
+        SensorDataSerialization[DATA_SIZE + i] = 0;
+
+    // Header Data
+    StructHeader Header;
+    Header.Type = FrameType::Data;
+    Header.FrameLength = (DATA_SIZE + SENSOR_ZERO_PADDING);
+    Header.CRC = Serialization::CalculateCRC(SensorDataSerialization, DATA_SIZE);
+    for (int i = 0; i < 16; i++)
+    {
+        Header.IV[i] = 0;
+    }
+    HeaderSerialization = Serialization::SerializeHeader(&Header);
+
+    // Concat Them
+    Concat = Serialization::HeaderBodyConcatenate(HeaderSerialization, SensorDataSerialization, DATA_SIZE + SENSOR_ZERO_PADDING);
+
     // Serialize Header and Data
     // Save to SD card
+
     delete[] SensorDataSerialization;
+    delete[] HeaderSerialization;
+    delete[] Concat;
 
     return true;
 }
@@ -39,7 +82,7 @@ bool ExecuteOfflineCommand::ExecuteSensorCommand()
 // Return flase if the command ID is not valid
 bool ExecuteOfflineCommand::ExecuteCameraCommand()
 {
-    if (Command->SequenceID != 5)
+    if (Command.SubSystemID != 5)
         return false;
 
     // Communicate with Camera through UART
@@ -50,7 +93,7 @@ bool ExecuteOfflineCommand::ExecuteCameraCommand()
 // Return flase if the command ID is not valid
 bool ExecuteOfflineCommand::ExecuteRoverCommand()
 {
-    if (Command->SequenceID != 7)
+    if (Command.SubSystemID != 7)
         return false;
     // Rover Movement
 
@@ -61,7 +104,8 @@ bool ExecuteOfflineCommand::ExecuteRoverCommand()
 // A call back function for the timer
 void ExecuteOfflineCommand::ExecuteCommand()
 {
-    for (int i = 0; i < Command->CommandRepeat; i++)
+
+    for (int i = 0; i < Command.CommandRepeat; i++)
     {
         ExecuteSensorCommand();
 
@@ -69,35 +113,23 @@ void ExecuteOfflineCommand::ExecuteCommand()
 
         ExecuteRoverCommand();
 
-        delay((Command->Delay * 1000));
+        delay((Command.Delay * 1000));
     }
 }
 
-// This method may be discarded in the future
-void ExecuteOfflineCommand::SetCommand(StructBody *_Command)
-{
-    Command = _Command;
-}
-
-void ExecuteOfflineCommand::RetriveCommands(byte CommandNumber)
+void ExecuteOfflineCommand::RetriveCommands()
 {
     // Retrive Commands from SD card
     // SetCommand(Commands[CommandNumber]);
+    EEPROM.get(CommandAddress, Command);
+    CommandAddress += sizeof(StructBody);
 }
 
-// this should return PlanSize and as well as plan address
-void ExecuteOfflineCommand::RetrivePlan(byte PlanNumber)
+void ExecuteOfflineCommand::InitExecution(StructPlanBody *Plan)
 {
-    // Retrive Plan from SD card
-}
-
-void ExecuteOfflineCommand::InitExecution(byte PlanNumber)
-{
-    byte PlanSize = 0;
-    RetrivePlan(PlanNumber);
-    for (int i = 0; i < PlanSize; i++)
+    for (int i = 0; i < Plan->NumberofFrames; i++)
     {
-        RetriveCommands(i);
+        RetriveCommands();
         ExecuteCommand();
     }
 }

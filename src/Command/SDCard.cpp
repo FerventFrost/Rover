@@ -1,14 +1,7 @@
 #include "SDCard.h"
 #include "SDCard.h"
 
-SDCard::SDCard()
-{
-}
-
-SDCard::~SDCard()
-{
-}
-
+// Check if the File to the desired path exists
 bool SDCard::isFileExist(fs::FS &fs, const char *path)
 {
     if (fs.exists(path))
@@ -52,7 +45,7 @@ void SDCard::MakeFile(fs::FS &fs, const char *path)
 
 // Write Data to file
 // Note: File must be opened before calling this function and this method does not close the file
-void SDCard::WriteData(fs::FS &fs, fs::File file, const char *path, byte *Body)
+void SDCard::WriteData(fs::FS &fs, fs::File file, byte *Body)
 {
     if (!file)
     {
@@ -66,27 +59,10 @@ void SDCard::WriteData(fs::FS &fs, fs::File file, const char *path, byte *Body)
     }
 }
 
-// Remove all data from file and close it
-void SDCard::RemoveAllData(fs::FS &fs, fs::File file, const char *path)
-{
-
-    if (!file)
-    {
-        Serial.println("Failed to open file for writing");
-    }
-    else
-    {
-        file.seek(0);
-        file.write('\0');
-        Serial.println("Data removed from the file");
-    }
-    file.close();
-}
-
 // Read Data from file till endline character
 // if file is empty or there is error close the file and return NULL
 // please delete the returned pointer after using it
-byte *SDCard::ReadData(fs::FS &fs, fs::File file, const char *path)
+byte *SDCard::ReadData(fs::FS &fs, fs::File file)
 {
     byte *Data = new byte[64];
     byte temp;
@@ -124,11 +100,34 @@ byte *SDCard::ReadData(fs::FS &fs, fs::File file, const char *path)
     }
 }
 
-bool SDCard::isFileAvailable(fs::FS &fs, fs::File file, const char *path)
+// Remove all data from file and close it
+void SDCard::RemoveAllData(fs::FS &fs, fs::File file)
+{
+
+    if (!file)
+    {
+        Serial.println("Failed to open file for writing");
+    }
+    else
+    {
+        file.seek(0);
+        file.write('\0');
+        Serial.println("Data removed from the file");
+    }
+    file.close();
+}
+
+// Check if the file has data
+bool SDCard::isDataAvailable(fs::FS &fs, fs::File file, const char *path)
 {
     if (file.available())
         return true;
     return false;
+}
+
+fs::File SDCard::GetFile()
+{
+    return File;
 }
 
 bool SDCard::OpenRead(fs::FS &fs, const char *path)
@@ -165,11 +164,6 @@ bool SDCard::OpenWrite(fs::FS &fs, const char *path)
     }
     File = WriteFile;
     return true;
-}
-
-fs::File SDCard::GetFile()
-{
-    return File;
 }
 
 void SDCard::CloseFile(fs::File File)

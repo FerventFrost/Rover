@@ -15,7 +15,9 @@ private:
 public:
     SDCard();
     ~SDCard();
-
+    
+    static bool isFileExist(fs::FS &fs, const char *path);
+    
     static void MakeDirectory(fs::FS &fs, const char *path);
     static void MakeFile(fs::FS &fs, const char *path);
 

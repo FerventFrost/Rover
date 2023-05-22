@@ -6,6 +6,11 @@ AcceptData::AcceptData()
     Plan = new StructPlanBody[PLAN_MAX];
 }
 
+~AcceptData::AcceptData()
+{
+    delete[] AcceptData::Plan;
+}
+
 // void AcceptData::ListenPlan()
 // {
 //     // This method listen for the plan using Websocket from Ground Station

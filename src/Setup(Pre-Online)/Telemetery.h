@@ -9,16 +9,16 @@ class Telemetery
 {
 private:
     fs::File File;
-    char *Path;
+    const char *Path;
     String planAddress;
-    byte plan[];
 
 public:
     Telemetery();
     ~Telemetery();
 
+    bool IsFileAvailable();
     byte *GetTelemetery();
-    void SetPath(char *path);
+    void SetPath(const char *path);
     void OpenFile();
     void CloseFile();
 

@@ -7,6 +7,7 @@
 #include "Command/Rover.h"
 #include "Command/CameraUART.h"
 #include "Command/ESPFlash.h"
+#include "Command/SDCard.h"
 #include <Arduino.h>
 
 #define SENSOR_ZERO_PADDING 3
@@ -22,6 +23,8 @@ private:
     // byte *SensorDataSerialization;
     int32_t CommandAddress;
     int64_t Time;
+    fs::File File;
+    char *Path;
     SensorsReading SensorData;
     StructBody Command;
     StructBodyData Data;
@@ -31,6 +34,11 @@ protected:
     bool ExecuteCameraCommand();
     bool ExecuteRoverCommand();
     bool ExecuteRoverSelfDriving();
+    void SetPath(char *path);
+    void OpenFile();
+    void CloseFile();
+    void SaveData(byte *SaveData);
+
 
 public:
     ExecuteOfflineCommand();

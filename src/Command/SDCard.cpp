@@ -9,6 +9,13 @@ SDCard::~SDCard()
 {
 }
 
+bool SDCard::isFileExist(fs::FS &fs, const char *path)
+{
+    if (fs.exists(path))
+        return true;
+    return false;
+}
+
 // Create a directory if it does not exist
 void SDCard::MakeDirectory(fs::FS &fs, const char *path)
 {

@@ -48,7 +48,7 @@
 //     // 9. if there is no plan then call SendEndOfTelemetery() to send a message to the ground station that the telemetery is over
 // }
 
-void Telemetery::SetPath(char *path)
+void Telemetery::SetPath(const char *path)
 {
     Path = path;
 }
@@ -64,6 +64,11 @@ void Telemetery::OpenFile()
 void Telemetery::CloseFile()
 {
     SDCard::CloseFile(File);
+}
+
+bool Telemetery::IsFileAvailable()
+{
+    return SDCard::isFileAvailable(SD, File, Path);
 }
 
 byte *Telemetery::GetTelemetery()

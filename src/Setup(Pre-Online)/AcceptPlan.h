@@ -18,6 +18,7 @@ private:
 
 public:
     AcceptData();
+    ~AcceptData();
     // void ListenPlan();
     // void StorePlan();
     // void AcceptInvalidPlan();

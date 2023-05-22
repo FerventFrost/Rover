@@ -139,6 +139,30 @@ void ExecuteOfflineCommand::ExecuteCommand()
     }
 }
 
+void ExecuteOfflineCommand::SetPath(char *path)
+{
+    Path = path;
+}
+
+void ExecuteOfflineCommand::OpenFile()
+{
+
+    if (SDCard::OpenAppend(SD, Path))
+    {
+        File = SDCard::GetFile();
+    }
+}
+
+void ExecuteOfflineCommand::CloseFile()
+{
+    SDCard::CloseFile(File);
+}
+
+void ExecuteOfflineCommand::SaveData(byte *SaveData)
+{
+    SDCard::WriteData(SD, File, Path, SaveData);
+}
+
 void ExecuteOfflineCommand::RetriveCommands()
 {
     // Retrive Commands from SD card

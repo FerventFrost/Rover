@@ -15,9 +15,6 @@ private:
     static StructBody Command;
 
 public:
-    ESPFlash();
-    ~ESPFlash();
-
     static void SetupFlash();
     static StructBody RetriveCommands();
     static void WriteCommand(StructBody command);

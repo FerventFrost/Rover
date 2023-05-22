@@ -1,12 +1,8 @@
 #include "ESPFlash.h"
 
-ESPFlash::ESPFlash()
-{
-}
-
-ESPFlash::~ESPFlash()
-{
-}
+int32_t ESPFlash::ReadAddress;
+int32_t ESPFlash::WriteAddress;
+StructBody ESPFlash::Command;
 
 void ESPFlash::SetupFlash()
 {

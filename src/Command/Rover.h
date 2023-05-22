@@ -18,8 +18,6 @@ private:
     static byte ReadUltraSonic();
 
 public:
-    RoverMovement();
-    ~RoverMovement();
     static void SelfDriving(uint32_t MoveTime);
     static void SetSpeed(int speed);
     static void Forward();

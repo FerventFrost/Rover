@@ -10,21 +10,13 @@
 #include "Command/SDCard.h"
 #include <Arduino.h>
 
+
 enum State
 {
     TelemeteryState,
     AcceptPlanState,
     ExecuteOnlineCommandState,
     SendOnlineDataState
-};
-
-struct FilePath
-{
-    const char *Plan1 = "Plan1.txt";
-    const char *Plan2 = "Plan2.txt";
-    const char *Plan3 = "Plan3.txt";
-    const char *Plan4 = "Plan4.txt";
-    const char *Plan5 = "Plan5.txt";
 };
 
 class StateController
@@ -42,6 +34,7 @@ private:
     SendOnlineData SendOnlineDataInstance;
 
 protected:
+    // Create Request Packet
     byte *InitTelemeteryRequest();
     byte *EndTelemetryRequest();
     byte *InitAcceptPlanRequest();
@@ -49,27 +42,39 @@ protected:
     byte *InitOnlineRequest();
     byte *EndOnlineRequest();
     byte *AcceptPlanRequest();
+    byte *DonePlanRequest();
     byte *ResendPlanRequest();
 
-    FrameType GetFrameType(byte *buffer);
-    void SendSocketData(byte *buffer);
-
+    // File Handling Methods
     fs::File OpenFile(const char *path);
     void CloseFile(fs::File file);
     void CreateFile(const char *path);
     void DeleteData(fs::File file, const char *path);
+    
+    // Socket Methods
+    void SendSocketData(byte *buffer);
+    byte *ReceiveSocketData();
+    bool ReceivedDataQueue();
 
-    bool SendTelemetery();
+    // Telemetery Methods
+    bool SendTelemetery(bool TelemeteryImage);
+    void SendImageTelemetry(int PlanID, byte SequenceID);
+
+    // Accept Plan Methods
+    bool ReceivedData(StructHeader *Header, byte *buffer, bool isOnline);
+    void ReceivedRequest(StructHeader *Header, byte *buffer);
 
 public:
     StateController();
     ~StateController();
 
+    void SetupStateMachine();
     void RunStates();
     void SetState(State state);
     void TelemeteryState();
     void AcceptPlanState();
-    void ExecuteOnlineCommandState();
+    void OnlineState();
+    bool ExecuteOnlineCommandState();
     void SendOnlineDataState();
 };
 

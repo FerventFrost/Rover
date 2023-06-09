@@ -10,24 +10,17 @@ class Telemetery
 private:
     fs::File File;
     const char *Path;
-    String planAddress;
 
 public:
-    Telemetery();
-    ~Telemetery();
+    // Telemetery();
+    // ~Telemetery();
 
-    bool IsFileAvailable();
-    byte *GetTelemetery();
-    void SetPath(const char *path);
     void OpenFile();
     void CloseFile();
+    void SetPath(const char *path);
+    void RemoveData(const char *path);
 
-    // void RetriveTelemetery();
-    // void SendTelemetery();
-    // void DeleteTelemetery();
-    // bool NextPlan();
-    // bool IsPlanAvailable();
-    // void RunTelemetery();
-    // void SendEndOfTelemetery();
+    bool IsDataAvailable();
+    byte *GetTelemetery();
 };
 #endif

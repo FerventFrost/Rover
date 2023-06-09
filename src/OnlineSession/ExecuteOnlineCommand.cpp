@@ -25,6 +25,8 @@ void ExecuteOnlineCommand::RoverMovement(byte Buffer[])
             RoverMovement::Left();
         else if (Command.CommandID == 4)
             RoverMovement::Stop();
+        else if(Command.CommandID == 5)
+            RoverMovement::SelfDriving(5000);
 
         delay(Command.Delay * 500);
     }

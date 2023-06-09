@@ -4,15 +4,31 @@
 #include <Wire.h>
 #include "Arduino.h"
 
+#define DHT_PIN 15
 #define DHT_TEMP 0
 #define DHT_HUMIDITY 1
+
 #define MPU_ACCEL 0
 #define MPU_GYRO 1
 #define MPU_TEMP 2
 
+#define MPU_NOT_AVAILABLE 0x00
+#define MPU 0x68
+#define MPU_REGISTER 0x6B
+#define MPU_ACCEL_REGISTER 0x3B
+#define MPU_GYRO_REGISTER 0x43
+#define MPU_TEMP_REGISTER 0x41
+#define RESETMPU 0x00
+
+#define MPU_ARRAY_SIZE_1 0x06
+#define MPU_ARRAY_SIZE_2 0x02
+
+#define SEND_STOP 1
+#define END_TRANSMISSION true
+
 #define ULTRASONIC_TRIG_PIN 13
 #define ULTRASONIC_ECHO_PIN 12
-#define DHT_PIN 15
+
 
 struct SensorsReading
 {
@@ -24,20 +40,9 @@ struct SensorsReading
 class Sensors
 {
 private:
-    static const byte MPU_NOT_AVAILABLE = 0x00;
-    static const byte MPU = 0x68;
-    static const byte MPU_REGISTER = 0x6B;
-    static const byte MPU_ACCEL_REGISTER = 0x3B;
-    static const byte MPU_GYRO_REGISTER = 0x43;
-    static const byte MPU_TEMP_REGISTER = 0x41;
-    static const byte RESETMPU = 0x00;
-    static const byte MPU_ARRAY_SIZE_1 = 6;
-    static const byte MPU_ARRAY_SIZE_2 = 2;
-    static const bool SEND_STOP = true;
-    static const bool END_TRANSMISSION = true;
+    static DHTesp dhtSensor;
 
 public:
-    static DHTesp dhtSensor;
     Sensors() {}
     // MPU6050 Sensor
     static void SetupMPU();

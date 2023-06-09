@@ -2,12 +2,15 @@
 #define Serialization_h
 
 #include "StructPlan.h"
-#include "Arduino.h"
+#include <Arduino.h>
+#include <iomanip>
+#include <iostream>
 
+#define SENSOR_ZERO_PADDING 3
 #define HEADER_SIZE 21
 #define REQUEST_SIZE 2
 #define SENSOR_DATA_SIZE 13
-#define IMAGE_SIZE 8
+#define IMAGE_DATA_SIZE 8
 
 class Serialization
 {
@@ -39,6 +42,8 @@ public:
     static byte *HeaderBodyConcatenate(byte *Header, byte *Body, unsigned int BodySize);
 
     static byte *SerializeBodyImage(StructBodyImage *body);
+
+    static void printBytesAsHex(const uint8_t *bytes, size_t length);
 };
 
 #endif

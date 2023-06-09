@@ -7,22 +7,22 @@
 ExecuteOfflineCommand::ExecuteOfflineCommand()
 {
     // Set Time when offline phase starts
-    CommandAddress = 0;
     Time = esp_timer_get_time();
-
+    Path = new char[11];
     // Set Rover Speed
     RoverMovement::SetSpeed(255);
 }
 
 ExecuteOfflineCommand::~ExecuteOfflineCommand()
 {
+    delete[] Path;
 }
 
 // Return flase if the command ID is not valid
-bool ExecuteOfflineCommand::ExecuteSensorCommand()
+void ExecuteOfflineCommand::ExecuteSensorCommand()
 {
     if (Command.SubSystemID > 2)
-        return false;
+        return;
 
     if (Command.SubSystemID == 0)
         SensorData = Sensors::DHT_Read(Command.CommandID);
@@ -33,11 +33,6 @@ bool ExecuteOfflineCommand::ExecuteSensorCommand()
     else if (Command.SubSystemID == 2)
         SensorData = Sensors::Ultrasonic_Read();
 
-    // Init Array
-    byte *SensorDataSerialization = new byte[DATA_SIZE + SENSOR_ZERO_PADDING];
-    byte *HeaderSerialization = new byte[HEADER_SIZE];
-    byte *Concat = new byte[HEADER_SIZE + DATA_SIZE + SENSOR_ZERO_PADDING];
-
     // Body Data
     Data.PlanID = Command.PlanID;
     Data.SequenceID = Command.SequenceID;
@@ -45,6 +40,7 @@ bool ExecuteOfflineCommand::ExecuteSensorCommand()
     Data.X = SensorData.x;
     Data.Y = SensorData.y;
     Data.Z = SensorData.z;
+
     SensorDataSerialization = Serialization::SerializeBodyData(&Data);
     for (int i = 0; i < SENSOR_ZERO_PADDING; i++)
         SensorDataSerialization[DATA_SIZE + i] = 0;
@@ -54,6 +50,7 @@ bool ExecuteOfflineCommand::ExecuteSensorCommand()
     Header.Type = FrameType::Data;
     Header.FrameLength = (DATA_SIZE + SENSOR_ZERO_PADDING);
     Header.CRC = Serialization::CalculateCRC(SensorDataSerialization, DATA_SIZE);
+
     for (int i = 0; i < 16; i++)
     {
         Header.IV[i] = 0;
@@ -61,41 +58,34 @@ bool ExecuteOfflineCommand::ExecuteSensorCommand()
     HeaderSerialization = Serialization::SerializeHeader(&Header);
 
     // Concat Them
-    Concat = Serialization::HeaderBodyConcatenate(HeaderSerialization, SensorDataSerialization, DATA_SIZE + SENSOR_ZERO_PADDING);
+    ConcatData = Serialization::HeaderBodyConcatenate(HeaderSerialization, SensorDataSerialization, DATA_SIZE + SENSOR_ZERO_PADDING);
+    SaveData(ConcatData);
 
-    // Serialize Header and Data
-    // Save to SD card
-
-    delete[] SensorDataSerialization;
     delete[] HeaderSerialization;
-    delete[] Concat;
-
-    return true;
+    delete[] SensorDataSerialization;
+    delete[] ConcatData;
 }
 
 // Return flase if the command ID is not valid
-bool ExecuteOfflineCommand::ExecuteCameraCommand()
+void ExecuteOfflineCommand::ExecuteCameraCommand() 
 {
-    if (Command.SubSystemID != 2)
-        return false;
+    if (Command.SubSystemID != 3)
+        return;
 
     StructBodyImage Image;
     Image.PlanID = Command.PlanID;
     Image.SequenceID = Command.SequenceID;
-    Image.Time = (esp_timer_get_time() - Time);
     Image.OperationType = 0;
 
     CameraUART::SendUARTData(&Image);
     // Communicate with Camera through UART
-
-    return true;
 }
 
 // Return flase if the command ID is not valid
-bool ExecuteOfflineCommand::ExecuteRoverCommand()
+void ExecuteOfflineCommand::ExecuteRoverCommand()
 {
-    if (Command.SubSystemID != 3)
-        return false;
+    if (Command.SubSystemID != 4)
+        return;
     // Rover Movement
 
     if (Command.CommandID == 0)
@@ -108,17 +98,10 @@ bool ExecuteOfflineCommand::ExecuteRoverCommand()
         RoverMovement::Left();
     else if (Command.CommandID == 4)
         RoverMovement::Stop();
-
-    return true;
+    else if(Command.CommandID == 5)
+        RoverMovement::SelfDriving(5000);
 }
 
-bool ExecuteOfflineCommand::ExecuteRoverSelfDriving()
-{
-    if (Command.SubSystemID != 4)
-        return false;
-
-    return true;
-}
 
 // Decide which command to execute (Sensor, Camera, Rover)
 // A call back function for the timer
@@ -133,20 +116,12 @@ void ExecuteOfflineCommand::ExecuteCommand()
 
         ExecuteRoverCommand();
 
-        ExecuteRoverSelfDriving();
-
         delay((Command.Delay * 1000));
     }
 }
 
-void ExecuteOfflineCommand::SetPath(char *path)
-{
-    Path = path;
-}
-
 void ExecuteOfflineCommand::OpenFile()
 {
-
     if (SDCard::OpenAppend(SD, Path))
     {
         File = SDCard::GetFile();
@@ -160,7 +135,7 @@ void ExecuteOfflineCommand::CloseFile()
 
 void ExecuteOfflineCommand::SaveData(byte *SaveData)
 {
-    SDCard::WriteData(SD, File, Path, SaveData);
+    SDCard::WriteDataln(File, SaveData);
 }
 
 void ExecuteOfflineCommand::RetriveCommands()
@@ -177,9 +152,37 @@ void ExecuteOfflineCommand::ResetCommandAddress()
 
 void ExecuteOfflineCommand::InitExecution(StructPlanBody *Plan)
 {
+    switch (Plan->NumberofPlans)
+    {
+    case 0:
+        Path = PlanFilePath.Plan1;
+        break;
+    case 1:
+        Path = PlanFilePath.Plan2;
+        break;
+    case 2:
+        Path = PlanFilePath.Plan3;
+        break;
+    case 3:
+        Path = PlanFilePath.Plan4;
+        break;
+    case 4:
+        Path = PlanFilePath.Plan5;
+        break;
+    default:
+        break;
+    }
+
+    OpenFile();
     for (int i = 0; i < Plan->NumberofFrames; i++)
     {
         RetriveCommands();
         ExecuteCommand();
     }
+    CloseFile();
+}
+
+void ExecuteOfflineCommand::SetCommand(StructBody command)
+{
+    Command = command;
 }

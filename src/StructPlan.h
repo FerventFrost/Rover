@@ -29,6 +29,15 @@ enum FrameType
     Image
 };
 
+const struct FilePath
+{
+    const char *Plan1;
+    const char *Plan2;
+    const char *Plan3;
+    const char *Plan4;
+    const char *Plan5;
+} PlanFilePath{"/Plan1.txt", "/Plan2.txt", "/Plan3.txt", "/Plan4.txt", "/Plan5.txt"};
+
 // Struct Size is 21
 struct StructHeader
 {
@@ -89,7 +98,11 @@ struct StructBodyImage
     byte SequenceID; // Frame Number in Plan
     byte OperationType;
     uint16_t PlanID; // Plan Number
-    uint32_t Time;
 };
 
+struct QueueNodeData
+{
+    byte *data;
+    size_t length;
+};
 #endif

@@ -14,12 +14,12 @@ byte *SendOnlineData::SendTemperature()
     // Init Array
     byte *SensorDataSerialization = new byte[DATA_SIZE + SENSOR_ZERO_PADDING];
     byte *HeaderSerialization = new byte[HEADER_SIZE];
-    byte *Concat = new byte[HEADER_SIZE + DATA_SIZE + SENSOR_ZERO_PADDING];
+    byte *Concat = new byte[HEADER_SIZE + DATA_SIZE + SENSOR_ZERO_PADDING + EndLine];
 
     // Body Data
     SensorData = Sensors::ReadTemp();
     Data.PlanID = 0;
-    Data.SequenceID = 0;
+    Data.SequenceID = TEMPERATURE_ID;
     Data.Time = esp_timer_get_time();
     Data.X = SensorData.x;
     Data.Y = 0;
@@ -56,12 +56,12 @@ byte *SendOnlineData::SendHumidity()
     // Init Array
     byte *SensorDataSerialization = new byte[DATA_SIZE + SENSOR_ZERO_PADDING];
     byte *HeaderSerialization = new byte[HEADER_SIZE];
-    byte *Concat = new byte[HEADER_SIZE + DATA_SIZE + SENSOR_ZERO_PADDING];
+    byte *Concat = new byte[HEADER_SIZE + DATA_SIZE + SENSOR_ZERO_PADDING + EndLine];
 
     // Body Data
     SensorData = Sensors::ReadHumidity();
     Data.PlanID = 0;
-    Data.SequenceID = 1;
+    Data.SequenceID = HUMIDITY_ID;
     Data.Time = esp_timer_get_time();
     Data.X = SensorData.x;
     Data.Y = 0;
@@ -98,12 +98,12 @@ byte *SendOnlineData::SendAccelerometer()
     // Init Array
     byte *SensorDataSerialization = new byte[DATA_SIZE + SENSOR_ZERO_PADDING];
     byte *HeaderSerialization = new byte[HEADER_SIZE];
-    byte *Concat = new byte[HEADER_SIZE + DATA_SIZE + SENSOR_ZERO_PADDING];
+    byte *Concat = new byte[HEADER_SIZE + DATA_SIZE + SENSOR_ZERO_PADDING + EndLine];
 
     // Body Data
     SensorData = Sensors::MPU_Accel();
     Data.PlanID = 0;
-    Data.SequenceID = 0;
+    Data.SequenceID = ACCELEROMETER_ID;
     Data.Time = esp_timer_get_time();
     Data.X = SensorData.x;
     Data.Y = SensorData.y;
@@ -140,12 +140,12 @@ byte *SendOnlineData::SendGyroscope()
     // Init Array
     byte *SensorDataSerialization = new byte[DATA_SIZE + SENSOR_ZERO_PADDING];
     byte *HeaderSerialization = new byte[HEADER_SIZE];
-    byte *Concat = new byte[HEADER_SIZE + DATA_SIZE + SENSOR_ZERO_PADDING];
+    byte *Concat = new byte[HEADER_SIZE + DATA_SIZE + SENSOR_ZERO_PADDING + EndLine];
 
     // Body Data
     SensorData = Sensors::MPU_Gyro();
     Data.PlanID = 0;
-    Data.SequenceID = 1;
+    Data.SequenceID = GYROSCOPE_ID;
     Data.Time = esp_timer_get_time();
     Data.X = SensorData.x;
     Data.Y = SensorData.y;
@@ -182,12 +182,12 @@ byte *SendOnlineData::SendMPUTemperature()
     // Init Array
     byte *SensorDataSerialization = new byte[DATA_SIZE + SENSOR_ZERO_PADDING];
     byte *HeaderSerialization = new byte[HEADER_SIZE];
-    byte *Concat = new byte[HEADER_SIZE + DATA_SIZE + SENSOR_ZERO_PADDING];
+    byte *Concat = new byte[HEADER_SIZE + DATA_SIZE + SENSOR_ZERO_PADDING + EndLine];
 
     // Body Data
     SensorData = Sensors::MPU_Temp();
     Data.PlanID = 0;
-    Data.SequenceID = 2;
+    Data.SequenceID = MPU_TEMPERATURE_ID;
     Data.Time = esp_timer_get_time();
     Data.X = SensorData.x;
     Data.Y = 0;
@@ -224,12 +224,12 @@ byte *SendOnlineData::SendUltrasonic()
     // Init Array
     byte *SensorDataSerialization = new byte[DATA_SIZE + SENSOR_ZERO_PADDING];
     byte *HeaderSerialization = new byte[HEADER_SIZE];
-    byte *Concat = new byte[HEADER_SIZE + DATA_SIZE + SENSOR_ZERO_PADDING];
+    byte *Concat = new byte[HEADER_SIZE + DATA_SIZE + SENSOR_ZERO_PADDING + EndLine];
 
     // Body Data
     SensorData = Sensors::Ultrasonic_Read();
     Data.PlanID = 0;
-    Data.SequenceID = 0;
+    Data.SequenceID = ULTRASONIC_ID;
     Data.Time = esp_timer_get_time();
     Data.X = SensorData.x;
     Data.Y = 0;
@@ -266,7 +266,6 @@ void SendOnlineData::SendCamera()
     StructBodyImage Image;
     Image.PlanID = 0;
     Image.SequenceID = 0;
-    Image.Time = esp_timer_get_time();
     Image.OperationType = 1;
 
     CameraUART::SendUARTData(&Image);
@@ -275,6 +274,7 @@ void SendOnlineData::SendCamera()
 // use must delete the returned pointer static unsigned int i = 0; is used to keep track of the last sent data and using static keyword to keep the value of i between function calls
 byte *SendOnlineData::SendData(byte ReadingsTurn)
 {
+    uint64_t Time = millis();
     switch (ReadingsTurn)
     {
     case 0:
@@ -297,5 +297,8 @@ byte *SendOnlineData::SendData(byte ReadingsTurn)
 
     default:
         return SendTemperature();
+    }
+    while (millis() - Time < 500)
+    {
     }
 }

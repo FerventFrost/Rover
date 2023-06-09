@@ -3,8 +3,7 @@
 WebSocket::WebSocket(const char *url)
 {
     esp_websocket_client_config_t websocket_cfg = {
-        .uri = "wss://localhost:7193/ws",
-        // .cert_pem = (const char *)websocket_org_pem_start,
+        .uri = url,
     };
 
     client = esp_websocket_client_init(&websocket_cfg);
@@ -50,10 +49,10 @@ void WebSocket::EventHandler(void *handler_args, esp_event_base_t base, int32_t 
         Serial.println("WEBSOCKET_EVENT_DISCONNECTED");
         break;
     case WEBSOCKET_EVENT_DATA:
-        Serial.print("Received: ");
-        Serial.println(data->data_len);
-        Serial.print("Data: ");
-        Serial.println((char *)data->data_ptr);
+        if (data->data_len != 0 && data->data_ptr != NULL)
+        {
+
+        }
         break;
     case WEBSOCKET_EVENT_ERROR:
         Serial.println("WEBSOCKET_EVENT_ERROR");

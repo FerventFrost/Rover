@@ -1,24 +1,27 @@
 #include "Sensors.h"
 
+DHTesp Sensors::dhtSensor;
+
 // MPU
 void Sensors::SetupMPU()
-{
+{ 
+    dhtSensor.setup(DHT_PIN, DHTesp::DHT11);
     Wire.begin();
-    Wire.beginTransmission(Sensors::MPU);
-    Wire.write(Sensors::MPU_REGISTER);
-    Wire.write(Sensors::RESETMPU);
-    Wire.endTransmission(Sensors::END_TRANSMISSION);
+    Wire.beginTransmission(MPU);
+    Wire.write(MPU_REGISTER);
+    Wire.write(RESETMPU);
+    Wire.endTransmission(END_TRANSMISSION);
 }
 
 SensorsReading Sensors::MPU_Accel()
 {
     SensorsReading Result;
-    Wire.beginTransmission(Sensors::MPU);
-    Wire.write(Sensors::MPU_ACCEL_REGISTER);
-    Wire.endTransmission((!Sensors::END_TRANSMISSION));
-    Wire.requestFrom(Sensors::MPU, Sensors::MPU_ARRAY_SIZE_1, Sensors::SEND_STOP);
+    Wire.beginTransmission(MPU);
+    Wire.write(MPU_ACCEL_REGISTER);
+    Wire.endTransmission(!END_TRANSMISSION);
+    Wire.requestFrom(MPU, MPU_ARRAY_SIZE_1, SEND_STOP);
 
-    if (Wire.available() != Sensors::MPU_NOT_AVAILABLE)
+    if (Wire.available() != MPU_NOT_AVAILABLE)
     {
         Result.x = (Wire.read() << 8 | Wire.read()) / 2048.0;
         Result.y = (Wire.read() << 8 | Wire.read()) / 2048.0;
@@ -36,12 +39,12 @@ SensorsReading Sensors::MPU_Accel()
 SensorsReading Sensors::MPU_Gyro()
 {
     SensorsReading Result;
-    Wire.beginTransmission(Sensors::MPU);
-    Wire.write(Sensors::MPU_GYRO_REGISTER);
-    Wire.endTransmission((!Sensors::END_TRANSMISSION));
-    Wire.requestFrom(Sensors::MPU, Sensors::MPU_ARRAY_SIZE_1, Sensors::SEND_STOP);
+    Wire.beginTransmission(MPU);
+    Wire.write(MPU_GYRO_REGISTER);
+    Wire.endTransmission((!END_TRANSMISSION));
+    Wire.requestFrom(MPU, MPU_ARRAY_SIZE_1, SEND_STOP);
 
-    if (Wire.available() != Sensors::MPU_NOT_AVAILABLE)
+    if (Wire.available() != MPU_NOT_AVAILABLE)
     {
         Result.x = (Wire.read() << 8 | Wire.read()) / 65.5;
         Result.y = (Wire.read() << 8 | Wire.read()) / 65.5;
@@ -59,12 +62,12 @@ SensorsReading Sensors::MPU_Gyro()
 SensorsReading Sensors::MPU_Temp()
 {
     SensorsReading Result;
-    Wire.beginTransmission(Sensors::MPU);
-    Wire.write(Sensors::MPU_TEMP_REGISTER);
-    Wire.endTransmission((!Sensors::END_TRANSMISSION));
-    Wire.requestFrom(Sensors::MPU, Sensors::MPU_ARRAY_SIZE_2, Sensors::SEND_STOP);
+    Wire.beginTransmission(MPU);
+    Wire.write(MPU_TEMP_REGISTER);
+    Wire.endTransmission((!END_TRANSMISSION));
+    Wire.requestFrom(MPU, MPU_ARRAY_SIZE_2, SEND_STOP);
 
-    if (Wire.available() != Sensors::MPU_NOT_AVAILABLE)
+    if (Wire.available() != MPU_NOT_AVAILABLE)
     {
         Result.x = (Wire.read() << 8 | Wire.read()) / 340 + 36.53;
         Result.y = 0;

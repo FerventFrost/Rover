@@ -74,9 +74,11 @@ byte *Serialization::SerializeHeader(StructHeader *Header)
     temp = DivideTwoByte(Header->FrameLength);
     buffer[1] = temp[0];
     buffer[2] = temp[1];
+    delete[] temp;
     temp = DivideTwoByte(Header->CRC);
     buffer[3] = temp[0];
     buffer[4] = temp[1];
+    delete[] temp;
 
     // Copy IV
     for (int i = 5; i < HEADER_SIZE; i++)
@@ -84,7 +86,6 @@ byte *Serialization::SerializeHeader(StructHeader *Header)
         buffer[i] = Header->IV[i - 5];
     }
 
-    delete[] temp;
     return buffer;
 }
 
@@ -148,7 +149,7 @@ StructBodyRequest Serialization::DeserializeBodyRequest(byte buffer[])
 // You must Delete the returned pointer after use or else memory leak will occur.
 byte *Serialization::SerializeBodyData(StructBodyData *Body)
 {
-    byte *buffer = new byte[(SENSOR_DATA_SIZE)];
+    byte *buffer = new byte[(SENSOR_DATA_SIZE + HEADER_SIZE)];
     byte *temp;
     temp = DivideTwoByte(Body->PlanID);
     buffer[0] = temp[0];
@@ -190,19 +191,13 @@ StructPlanBody Serialization::DeserializePlanBody(byte buffer[])
 // You must Delete the returned pointer after use or else memory leak will occur.
 byte *Serialization::SerializeBodyImage(StructBodyImage *body)
 {
-    byte *buffer = new byte[IMAGE_SIZE];
+    byte *buffer = new byte[IMAGE_DATA_SIZE];
     byte *temp;
     buffer[0] = body->SequenceID;
     buffer[1] = body->OperationType;
     temp = DivideTwoByte(body->PlanID);
     buffer[2] = temp[0];
     buffer[3] = temp[1];
-    delete[] temp;
-    temp = DivideFourByte(body->Time);
-    buffer[4] = temp[0];
-    buffer[5] = temp[1];
-    buffer[6] = temp[2];
-    buffer[7] = temp[3];
     delete[] temp;
 
     return buffer;
@@ -223,4 +218,14 @@ byte *Serialization::HeaderBodyConcatenate(byte *Header, byte *Body, unsigned in
     }
 
     return buffer;
+}
+
+void Serialization::printBytesAsHex(const uint8_t *bytes, size_t length)
+{
+    std::cout << std::hex << std::setfill('0');
+    for (size_t i = 0; i < length; ++i)
+    {
+        std::cout << std::setw(2) << static_cast<int>(bytes[i]) << " ";
+    }
+    std::cout << std::dec << std::setfill(' ') << std::endl;
 }

@@ -10,6 +10,7 @@ void RoverMovement::Forward()
 {
     digitalWrite(MOTOR1, HIGH);
     digitalWrite(MOTOR2, LOW);
+
     digitalWrite(MOTOR3, HIGH);
     digitalWrite(MOTOR4, LOW);
 }
@@ -49,73 +50,35 @@ void RoverMovement::Stop()
 
 void RoverMovement::SelfDriving(uint32_t MoveTime)
 {
-    byte reading = 0;
+    SensorsReading reading;
+    reading.x = BAHER_SIZE;
     unsigned long startTime = millis();
+    int RightTimer = 0;
     while (millis() - startTime < MoveTime)
     {
-        reading = ReadUltraSonic();
-        if (reading < 30)
+        if (reading.x < 25)
         {
+            Serial.println("Obstacle Detected");
             Stop();
-            delay(1000);
-            Right();
-            delay(1000);
+            delay(100);
+            while (RightTimer < 700)
+            {
+                Right();
+                delay(100);
+                RightTimer += 100;
+                if(Sensors::Ultrasonic_Read().x > 25)
+                {
+                    break;
+                }
+            }
+            RightTimer = 0;
         }
         else
         {
+            Serial.println("No Obstacle");
             Forward();
+            delay(33);
         }
+        reading = Sensors::Ultrasonic_Read();
     }
 }
-
-void RoverMovement::SetupUltraSonic()
-{
-    pinMode(ULTRASONIC_TRIG_PIN, OUTPUT);
-    pinMode(ULTRASONIC_ECHO_PIN, INPUT);
-}
-
-byte RoverMovement::ReadUltraSonic()
-{
-    byte reading = 0;
-    digitalWrite(ULTRASONIC_TRIG_PIN, LOW);
-    delayMicroseconds(2);
-    digitalWrite(ULTRASONIC_TRIG_PIN, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(ULTRASONIC_TRIG_PIN, LOW);
-    reading = pulseIn(ULTRASONIC_ECHO_PIN, HIGH);
-    reading = reading * 0.034 / 2;
-    return reading;
-}
-
-// void loop()
-// {
-//     // put your main code here, to run repeatedly:
-//     SetSpeed(255);
-//     incomingByte = Serial.read();
-
-//     Serial.println(incomingByte);
-
-//     switch (incomingByte)
-//     {
-//     case 'f':
-//         Forward();
-//         break;
-//     case 'b':
-//         Backward();
-//         break;
-//     case 'l':
-//         Left();
-//         break;
-//     case 'r':
-//         Right();
-//         break;
-//     case 's':
-//         Stop();
-//         break;
-//     default:
-//         Stop();
-//         break;
-//     }
-
-//     delay(1000);
-// }

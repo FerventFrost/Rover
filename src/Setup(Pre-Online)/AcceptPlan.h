@@ -12,29 +12,24 @@ class AcceptData
 {
 private:
     // Data
+    StructHeader Header;
     byte PlanCounter;
     StructPlanBody *Plan;
-    StructHeader Header;
 
 public:
     AcceptData();
-    ~AcceptData();
-    // void ListenPlan();
-    // void StorePlan();
-    // void AcceptInvalidPlan();
-    // void ExecuteAcceptPlan();
-    // void EndAcceptPlan();
+    // ~AcceptData();
 
     void AcceptHeader(byte *buffer);
     bool AcceptPlan(byte *buffer);
     bool AcceptCommand(byte *buffer);
+
     void ResetCommandAdress();
     StructPlanBody *ReturnPlans();
 
 protected:
-    // bool isPlanValid();
-    // bool isPlanAvailable();
     void SaveCommand(StructBody command);
+
 };
 
 #endif

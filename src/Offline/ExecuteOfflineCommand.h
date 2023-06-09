@@ -8,6 +8,7 @@
 #include "Command/CameraUART.h"
 #include "Command/ESPFlash.h"
 #include "Command/SDCard.h"
+#include "esp_timer.h"
 #include <Arduino.h>
 
 #define SENSOR_ZERO_PADDING 3
@@ -17,28 +18,29 @@
 // This Class can't be used with threads because SensorData is a data member global variable
 // INs : Take Command using SetCommand method and init timer using InitCommandTimer method
 // OUTs : Execute the command and save the data to SD card
+
 class ExecuteOfflineCommand
 {
 private:
-    // byte *SensorDataSerialization;
-    int32_t CommandAddress;
+    const char *Path;
+    byte *SensorDataSerialization;
+    byte *HeaderSerialization;
+    byte *ConcatData;
     int64_t Time;
     fs::File File;
-    char *Path;
     SensorsReading SensorData;
     StructBody Command;
     StructBodyData Data;
 
 protected:
-    bool ExecuteSensorCommand();
-    bool ExecuteCameraCommand();
-    bool ExecuteRoverCommand();
-    bool ExecuteRoverSelfDriving();
+    void ExecuteSensorCommand();
+    void ExecuteCameraCommand();
+    void ExecuteRoverCommand();
+    void ExecuteRoverSelfDriving();
     void SetPath(char *path);
     void OpenFile();
     void CloseFile();
     void SaveData(byte *SaveData);
-
 
 public:
     ExecuteOfflineCommand();
@@ -48,6 +50,8 @@ public:
     void ExecuteCommand();
     void InitExecution(StructPlanBody *Plan);
     void RetriveCommands();
+
+    void SetCommand(StructBody command);
 };
 
 #endif

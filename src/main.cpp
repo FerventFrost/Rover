@@ -1,89 +1,70 @@
-// #include "Communication/websocket.h"
-#include "Command/Rover.h"
-// #include "Command/CameraUART.h"
-// #include "Command/ESPFlash.h"
-// #include "StateController.h"
-// #include <EEPROM.h>
 #include <Arduino.h>
-// #include <WiFi.h>
+#include "Communication\WebSocket.h"
+#include "WiFi.h"
+#include "Command\Rover.h"
+#include "Command\Sensors.h"
+// #define IN1 2
+// #define IN2 4
+// #define IN3 15
+// #define IN4 17
+// #define ENA 5  // Enable pin for the first motor
+// #define ENB 18 // Enable pin for the second motor
 
-#define EEPROM_SIZE 2500
+const char *ssid = "Step";
+const char *password = "@2805_1984@";
+const char *URL = "ws://192.168.1.20:6969/ws";
+WebSocket *_socketHandler;
 
-// const char *ssid = "Step";
-// const char *password = "@2805_1984@";
-// const char *URL = "wss://localhost:7193/ws";
-// FilePath filePath;
-
-  static const char trigPin = 9;
-  static const char echoPin = 10;
-void setup()
-{
+int counter = 0;
+void setup() {
   Serial.begin(115200);
-  pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
-  pinMode(echoPin, INPUT);  // Sets the echoPin as an Input
-  // RoverMovement::SetSpeed(120);
-  // RoverMovement::SetupUltraSonic();
-  // Serial1.begin(BAUD_RATE, SERIAL_8N1, RXD_PIN, TXD_PIN);
-  // Serial.println("Initialize System");
-  // ESPFlash::SetupFlash();
-  // CameraUART::SetupUART();
-  // StructBody Command;
-  // Command.PlanID = 25005;
-  // Command.SequenceID = 3;
-  // Command.CommandID = 12;
-  // Command.SubSystemID = 2;
-  // Command.Delay = 0;
-  // Command.CommandRepeat = 1;
 
-  // ESPFlash::WriteCommand(Command);
-  // Command.PlanID = 35005;
-  // ESPFlash::WriteCommand(Command);
+  WiFi.begin(ssid, password);
 
-  // StructBody Command2 = ESPFlash::RetriveCommands();
-  // Serial.println(Command2.PlanID);
-  // Serial.println(Command2.SequenceID);
-  // Serial.println(Command2.CommandID);
-  // Serial.println(Command2.SubSystemID);
-  // Serial.println(Command2.Delay);
-  // Serial.println(Command2.CommandRepeat);
-  // Command2 = ESPFlash::RetriveCommands();
-  // Serial.println(Command2.PlanID);
-  // Serial.println(Command2.SequenceID);
-  // Serial.println(Command2.CommandID);
-  // Serial.println(Command2.SubSystemID);
-  // Serial.println(Command2.Delay);
-  // Serial.println(Command2.CommandRepeat);
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(1000);
+    Serial.println("Connecting to WiFi...");
+  }
+  Serial.println("Connected");
+  _socketHandler = new WebSocket(URL);
+  Serial.println("Established");
+  // Sensors::SetupUltrasonic();
+  // pinMode(IN1, OUTPUT);
+  // pinMode(IN2, OUTPUT);
+  // pinMode(IN3, OUTPUT);
+  // pinMode(IN4, OUTPUT);
+  // RoverMovement::SetSpeed(150);
 }
 
-void loop()
-{
-  // Serial.println(RoverMovement::ReadUltraSonic());
-  digitalWrite(trigPin, LOW);
-  delayMicroseconds(2);
-  // Sets the trigPin on HIGH state for 10 micro seconds
-  digitalWrite(trigPin, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
-  // Reads the echoPin, returns the sound wave travel time in microseconds
-  // Calculating the distance
-  short int Distance = pulseIn(echoPin, HIGH) * 0.034 / 2;
-  Serial.println(Distance);
-  delay(1000);
-  // StructBodyImage *Image = new StructBodyImage();
-  // Image->PlanID= 25005;
-  // Image->SequenceID = 3;
-  // Image->OperationType = 1;
-  // CameraUART::SendUARTData(Image);
-  // delete Image;
-  // // Serial1.println("Sending Image");
-  // delay(1000);
+void loop() {
+  Serial.println("Hello World");
+  // if(!DataQueue->empty())
+  // {
+  //   Serial.println("Empy Panic");
+  //   byte *data = DataQueue->front();
+  //   DataQueue->pop();
+  //   Serial.write(data,11);
+  //   delete[] data;
+  // }
+  if(counter < 5)
+  {
+    Serial.println("Wowo NicePanic");
+    _socketHandler->SendText("World Hello", 11);
+    counter++;
+    delay(200);
+  }
+  // SensorsReading r = Sensors::Ultrasonic_Read();
+  // Serial.println(r.x);
+  // RoverMovement::Forward();
+  // RoverMovement::SelfDriving(5000);
+  // Serial.println("End of loop");
+  // Add any additional logic or control you need here
+  
+  // delay(1000);  // Run the motors for 1 second
 
-  // Write data into eeprom
-  // Read data from eeprom
+  // Stop the motors
+  // RoverMovement::Stop();
 
-  /*float readParam;
-    EEPROM.get(address, readParam); //readParam=EEPROM.readFloat(address);
-    Serial.print("Read param = ");
-    Serial.println(readParam);*/
-  delay(500);
+  delay(1000);  // Pause for 1 second before running the motors again
 }

@@ -86,4 +86,10 @@ struct StructBodyImage
     uint32_t Time;
 };
 
+struct QueueData
+{
+    /* data */
+    uint8_t *data;
+    size_t length;
+};
 #endif // TEST_STRUCT_H

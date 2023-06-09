@@ -22,7 +22,7 @@ ByteQueue::~ByteQueue() {
 
 bool ByteQueue::enqueue(byte* data, size_t length) {
     Node* newNode = new Node(data, length);
-
+    
     if (isEmpty()) {
         front = newNode;
         rear = newNode;
@@ -30,21 +30,22 @@ bool ByteQueue::enqueue(byte* data, size_t length) {
         rear->next = newNode;
         rear = newNode;
     }
-
     return true;
 }
 
-bool ByteQueue::dequeue(byte* data, size_t length) {
+QueueNodeData ByteQueue::dequeue() {
+    QueueNodeData data;
     if (isEmpty()) {
-        return false;
+        data.data = nullptr;
+        data.length = 0;
+        return data;
     }
-
-    Node* temp = front;
+    data.data = new byte[front->length];
+    memcpy(data.data, front->data, front->length);
+    data.length = front->length;
     front = front->next;
-    memcpy(data, temp->data, length);
-    delete temp;
 
-    return true;
+    return data;
 }
 
 bool ByteQueue::isEmpty() const {

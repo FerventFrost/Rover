@@ -6,6 +6,7 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include "esp_websocket_client.h"
+#include "Command\Queue.h"
 #include <esp_log.h>
 // #include <AsyncTCP.h>
 // #include <ESPAsyncWebServer.h>
@@ -14,6 +15,7 @@ class WebSocket
 {
 private:
     esp_websocket_client_handle_t client;
+    static ByteQueue *DataQueue;
     // this part is for First Requests that indicate the GS try to connect to Rover
     // static WebServer *server;
     static String ReceivedURL;
@@ -24,7 +26,7 @@ private:
     void ExecuteCommand(char *Body, FrameType Type);
 
 public:
-    WebSocket(const char *url);
+    WebSocket(const char *url, ByteQueue *queue);
     ~WebSocket();
     void SendText(char *message, size_t len);
     void SendBinary(const char *data, size_t len, size_t chunkSize);

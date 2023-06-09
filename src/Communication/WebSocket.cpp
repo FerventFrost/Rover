@@ -1,7 +1,10 @@
 #include "WebSocket.h"
 
-WebSocket::WebSocket(const char *url)
+ByteQueue *WebSocket::DataQueue;
+
+WebSocket::WebSocket(const char *url, ByteQueue *queue)
 {
+    DataQueue = queue;
     esp_websocket_client_config_t websocket_cfg = {
         .uri = url,
     };
@@ -51,7 +54,7 @@ void WebSocket::EventHandler(void *handler_args, esp_event_base_t base, int32_t 
     case WEBSOCKET_EVENT_DATA:
         if (data->data_len != 0 && data->data_ptr != NULL)
         {
-
+            DataQueue->enqueue((byte *)data->data_ptr, data->data_len);
         }
         break;
     case WEBSOCKET_EVENT_ERROR:

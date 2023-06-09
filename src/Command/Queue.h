@@ -23,7 +23,7 @@ public:
     ~ByteQueue();
 
     bool enqueue(byte* data, size_t length);
-    bool dequeue(byte* data, size_t length);
+    QueueNodeData dequeue();
     bool isEmpty() const;
 };
 

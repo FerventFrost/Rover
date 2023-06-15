@@ -1,8 +1,18 @@
 #include "StateController.h"
 
-StateController::StateController()
+void printBytesAsHex(const uint8_t *bytes, size_t length)
 {
+    std::cout << std::hex << std::setfill('0');
+    for (size_t i = 0; i < length; ++i)
+    {
+        std::cout << std::setw(2) << static_cast<int>(bytes[i]) << " ";
+    }
+    std::cout << std::dec << std::setfill(' ') << std::endl;
+}
 
+StateController::StateController(/*WebSocket *DataSocket*/)
+{
+    // _dataSocket = DataSocket;
     currentState = State::TelemeteryState;
 }
 
@@ -159,14 +169,14 @@ void StateController::OnlineState()
 
 bool StateController::ExecuteOnlineCommandState()
 {
-    byte *data;
-    StructHeader header = Serialization::DeserializeHeader(data);
-    if (header.Type == FrameType::Request)
-    {
-        ReceivedRequest(&header, &data[21]);
-        return true;
-    }
-    ReceivedData(&header, &data[21], true);
+    // byte *data;
+    // StructHeader header = Serialization::DeserializeHeader(data);
+    // if (header.Type == FrameType::Request)
+    // {
+    //     ReceivedRequest(&header, &data[21]);
+    //     return true;
+    // }
+    // ReceivedData(&header, &data[21], true);
     return false;
 }
 
@@ -174,11 +184,12 @@ void StateController::SendOnlineDataState()
 {
     Serial.println("Online State");
     byte *buffer = nullptr;
-    SendOnlineDataInstance.SendCamera();
+    // SendOnlineDataInstance.SendCamera();
     for (int i = 0; i < 6; i++)
     {
-        buffer = SendOnlineDataInstance.SendData(i);
+        buffer = SendOnlineDataInstance.SendData(0);
         SendSocketData(buffer);
+        Serial.print("Sended");
         delete[] buffer;
         buffer = nullptr;
     }
@@ -187,10 +198,9 @@ void StateController::SendOnlineDataState()
 void StateController::SendSocketData(byte *buffer)
 {
     Serial.print("Send Data: ");
-    // Serial.println(buffer[i]);
     Serialization::printBytesAsHex(buffer, 37);
     Serial.println();
-    // send data to socket
+    _dataSocket->SendText((char *)buffer, 34);
 }
 
 fs::File StateController::OpenFile(const char *path)

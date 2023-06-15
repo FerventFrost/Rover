@@ -40,61 +40,18 @@ QueueNodeData ByteQueue::dequeue() {
         data.length = 0;
         return data;
     }
-    data.data = new byte[front->length];
-    memcpy(data.data, front->data, front->length);
-    data.length = front->length;
-    front = front->next;
 
+    Node *temp = front;
+    data.data = new byte[front->length];
+
+    memcpy(data.data, temp->data, temp->length);
+    data.length = temp->length;
+    
+    front = front->next;
+    delete temp;
     return data;
 }
 
 bool ByteQueue::isEmpty() const {
     return front == nullptr;
 }
-// ByteQueue::ByteQueue(size_t size) : maxSize(size), frontIndex(0), rearIndex(0), currentSize(0) {
-//     queueArray = new byte[size];
-// }
-
-// ByteQueue::~ByteQueue() {
-//     delete[] queueArray;
-// }
-
-// bool ByteQueue::enqueue(const byte* data, size_t length) {
-//     if (isFull()) {
-//         return false;  // Queue is full, unable to enqueue
-//     }
-
-//     for (size_t i = 0; i < length; ++i) {
-//         queueArray[rearIndex] = data[i];
-//         rearIndex = (rearIndex + 1) % maxSize;
-//         ++currentSize;
-//     }
-
-//     return true;
-// }
-
-// bool ByteQueue::dequeue(byte* data, size_t length) {
-//     if (isEmpty() || length > currentSize) {
-//         return false;  // Queue is empty or insufficient data to dequeue
-//     }
-
-//     for (size_t i = 0; i < length; ++i) {
-//         data[i] = queueArray[frontIndex];
-//         frontIndex = (frontIndex + 1) % maxSize;
-//         --currentSize;
-//     }
-
-//     return true;
-// }
-
-// bool ByteQueue::isEmpty() const {
-//     return currentSize == 0;
-// }
-
-// bool ByteQueue::isFull() const {
-//     return currentSize == maxSize;
-// }
-
-// size_t ByteQueue::size() const {
-//     return currentSize;
-// }

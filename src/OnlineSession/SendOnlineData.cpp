@@ -17,11 +17,11 @@ byte *SendOnlineData::SendTemperature()
     byte *Concat = new byte[HEADER_SIZE + DATA_SIZE + SENSOR_ZERO_PADDING + EndLine];
 
     // Body Data
-    SensorData = Sensors::ReadTemp();
+    // SensorData = Sensors::ReadTemp();
     Data.PlanID = 0;
     Data.SequenceID = TEMPERATURE_ID;
     Data.Time = esp_timer_get_time();
-    Data.X = SensorData.x;
+    Data.X = 50;
     Data.Y = 0;
     Data.Z = 0;
     SensorDataSerialization = Serialization::SerializeBodyData(&Data);

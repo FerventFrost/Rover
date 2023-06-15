@@ -8,7 +8,10 @@
 #include "OnlineSession/SendOnlineData.h"
 #include "Command/CameraUART.h"
 #include "Command/SDCard.h"
+#include "Communication/WebSocket.h"
 #include <Arduino.h>
+#include <iomanip>
+#include <iostream>
 
 
 enum State
@@ -32,6 +35,9 @@ private:
     AcceptData AcceptDataInstance;
     ExecuteOnlineCommand ExecuteOnlineCommandInstance;
     SendOnlineData SendOnlineDataInstance;
+    WebSocket *_dataSocket;
+
+    // void printBytesAsHex(const uint8_t *bytes, size_t length);
 
 protected:
     // Create Request Packet
@@ -65,7 +71,7 @@ protected:
     void ReceivedRequest(StructHeader *Header, byte *buffer);
 
 public:
-    StateController();
+    StateController(/*WebSocket *DataSocket*/);
     ~StateController();
 
     void SetupStateMachine();

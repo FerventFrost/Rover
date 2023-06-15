@@ -81,9 +81,9 @@ byte *Serialization::SerializeHeader(StructHeader *Header)
     delete[] temp;
 
     // Copy IV
-    for (int i = 5; i < HEADER_SIZE; i++)
+    for (int i = 0; i < (16); i++)
     {
-        buffer[i] = Header->IV[i - 5];
+        buffer[i + 5] = Header->IV[i];
     }
 
     return buffer;
@@ -149,7 +149,7 @@ StructBodyRequest Serialization::DeserializeBodyRequest(byte buffer[])
 // You must Delete the returned pointer after use or else memory leak will occur.
 byte *Serialization::SerializeBodyData(StructBodyData *Body)
 {
-    byte *buffer = new byte[(SENSOR_DATA_SIZE + HEADER_SIZE)];
+    byte *buffer = new byte[(SENSOR_DATA_SIZE + 3)];
     byte *temp;
     temp = DivideTwoByte(Body->PlanID);
     buffer[0] = temp[0];
@@ -173,6 +173,9 @@ byte *Serialization::SerializeBodyData(StructBodyData *Body)
     temp = DivideTwoByte(Body->Z);
     buffer[11] = temp[0];
     buffer[12] = temp[1];
+    buffer[13] = 0;
+    buffer[14] = 0;
+    buffer[15] = 0;
     delete[] temp;
 
     return buffer;

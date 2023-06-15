@@ -5,6 +5,7 @@
 #include "Command/Sensors.h"
 #include "Serialization/Serialization.h"
 #include "Command/CameraUART.h"
+#include "Communication/WebSocket.h"
 #include <Arduino.h>
 
 #define SENSOR_ZERO_PADDING 3
@@ -23,6 +24,7 @@ class SendOnlineData
 private:
     SensorsReading SensorData;
     StructBodyData Data;
+    WebSocket *_dataSocket;
 
     byte *SendTemperature();
     byte *SendHumidity();
@@ -36,6 +38,7 @@ public:
     SendOnlineData();
     ~SendOnlineData();
 
+    void SetSocket(WebSocket *dataSocket);
     void SendCamera();
     byte *SendData(byte ReadingsTurn);
 };

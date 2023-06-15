@@ -13,7 +13,6 @@
 #include <iomanip>
 #include <iostream>
 
-
 enum State
 {
     TelemeteryState,
@@ -56,7 +55,7 @@ protected:
     void CloseFile(fs::File file);
     void CreateFile(const char *path);
     void DeleteData(fs::File file, const char *path);
-    
+
     // Socket Methods
     void SendSocketData(byte *buffer);
     byte *ReceiveSocketData();
@@ -71,7 +70,7 @@ protected:
     void ReceivedRequest(StructHeader *Header, byte *buffer);
 
 public:
-    StateController(/*WebSocket *DataSocket*/);
+    StateController(WebSocket *DataSocket);
     ~StateController();
 
     void SetupStateMachine();

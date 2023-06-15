@@ -20,9 +20,10 @@ WebSocket::~WebSocket()
     esp_websocket_client_destroy(client);
 }
 
-void WebSocket::SendText(char *message, size_t len)
+void WebSocket::SendText(const char *message, size_t len)
 {
-    esp_websocket_client_send_text(client, message, len, portMAX_DELAY);
+    Serial.println("Sending Text");
+    esp_websocket_client_send(client, message, len, portMAX_DELAY);
 }
 
 void WebSocket::SendBinary(const char *data, size_t len, size_t chunkSize)
@@ -54,7 +55,9 @@ void WebSocket::EventHandler(void *handler_args, esp_event_base_t base, int32_t 
     case WEBSOCKET_EVENT_DATA:
         if (data->data_len != 0 && data->data_ptr != NULL)
         {
-            DataQueue->enqueue((byte *)data->data_ptr, data->data_len);
+            // DataQueue->enqueue((byte *)data->data_ptr, data->data_len);
+            Serial.write(data->data_ptr, data->data_len);
+            Serial.println();
         }
         break;
     case WEBSOCKET_EVENT_ERROR:

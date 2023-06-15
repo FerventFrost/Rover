@@ -7,7 +7,6 @@
 #include <WebServer.h>
 #include "esp_websocket_client.h"
 #include "Command\Queue.h"
-#include <esp_log.h>
 // #include <AsyncTCP.h>
 // #include <ESPAsyncWebServer.h>
 
@@ -28,7 +27,7 @@ private:
 public:
     WebSocket(const char *url, ByteQueue *queue);
     ~WebSocket();
-    void SendText(char *message, size_t len);
+    void SendText(const char *message, size_t len);
     void SendBinary(const char *data, size_t len, size_t chunkSize);
     void DeserializeHeader(char *message, size_t len);
     void AESEncryptCBC(char *message, size_t len, char *IV);

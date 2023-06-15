@@ -8,24 +8,28 @@ SendOnlineData::~SendOnlineData()
 {
 }
 
+void SendOnlineData::SetSocket(WebSocket *dataSocket)
+{
+    _dataSocket = dataSocket;
+}
 // use must delete the returned pointer
 byte *SendOnlineData::SendTemperature()
 {
     // Init Array
     byte *SensorDataSerialization = new byte[DATA_SIZE + SENSOR_ZERO_PADDING];
     byte *HeaderSerialization = new byte[HEADER_SIZE];
-    byte *Concat = new byte[HEADER_SIZE + DATA_SIZE + SENSOR_ZERO_PADDING + EndLine];
-
+    byte *Concat = new byte[HEADER_SIZE + DATA_SIZE + SENSOR_ZERO_PADDING];
+    byte *testCopy = new byte[13];
     // Body Data
-    // SensorData = Sensors::ReadTemp();
-    Data.PlanID = 0;
+    //  SensorData = Sensors::ReadTemp();
+    Data.PlanID = 7;
     Data.SequenceID = TEMPERATURE_ID;
     Data.Time = esp_timer_get_time();
     Data.X = 50;
     Data.Y = 0;
-    Data.Z = 0;
+    Data.Z = 1;
     SensorDataSerialization = Serialization::SerializeBodyData(&Data);
-    // Data Zero Padding
+    // // Data Zero Padding
     for (int i = 0; i < SENSOR_ZERO_PADDING; i++)
         SensorDataSerialization[DATA_SIZE + i] = 0;
 
@@ -41,9 +45,7 @@ byte *SendOnlineData::SendTemperature()
     }
     HeaderSerialization = Serialization::SerializeHeader(&Header);
 
-    // Concat Them
     Concat = Serialization::HeaderBodyConcatenate(HeaderSerialization, SensorDataSerialization, DATA_SIZE + SENSOR_ZERO_PADDING);
-
     delete[] SensorDataSerialization;
     delete[] HeaderSerialization;
 
@@ -274,7 +276,6 @@ void SendOnlineData::SendCamera()
 // use must delete the returned pointer static unsigned int i = 0; is used to keep track of the last sent data and using static keyword to keep the value of i between function calls
 byte *SendOnlineData::SendData(byte ReadingsTurn)
 {
-    uint64_t Time = millis();
     switch (ReadingsTurn)
     {
     case 0:
@@ -297,8 +298,5 @@ byte *SendOnlineData::SendData(byte ReadingsTurn)
 
     default:
         return SendTemperature();
-    }
-    while (millis() - Time < 500)
-    {
     }
 }

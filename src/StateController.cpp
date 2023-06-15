@@ -10,9 +10,10 @@ void printBytesAsHex(const uint8_t *bytes, size_t length)
     std::cout << std::dec << std::setfill(' ') << std::endl;
 }
 
-StateController::StateController(/*WebSocket *DataSocket*/)
+StateController::StateController(WebSocket *DataSocket)
 {
-    // _dataSocket = DataSocket;
+    _dataSocket = DataSocket;
+    SendOnlineDataInstance.SetSocket(DataSocket);
     currentState = State::TelemeteryState;
 }
 
@@ -163,7 +164,7 @@ void StateController::OnlineState()
         if (true)
             EndOnline = ExecuteOnlineCommandState();
         SendOnlineDataState();
-        delay(200);
+        delay(50);
     }
 }
 
@@ -182,17 +183,23 @@ bool StateController::ExecuteOnlineCommandState()
 
 void StateController::SendOnlineDataState()
 {
-    Serial.println("Online State");
-    byte *buffer = nullptr;
+    byte *buffer = new byte[37];
+    // buffer[0] = 0x68;
+    // buffer[1] = 0x65;
+    // buffer[2] = 0x6C;
+    // buffer[3] = 0x00;
+    // buffer[4] = 0x00;
+    // Serial.println("Online State");
+    // _dataSocket->SendText((const char *)buffer, 5);
+    // _dataSocket->SendText((const char *)"Send Online Data", 16);
     // SendOnlineDataInstance.SendCamera();
-    for (int i = 0; i < 6; i++)
-    {
-        buffer = SendOnlineDataInstance.SendData(0);
-        SendSocketData(buffer);
-        Serial.print("Sended");
-        delete[] buffer;
-        buffer = nullptr;
-    }
+    // for (int i = 0; i < 6; i++)
+    // {
+    buffer = SendOnlineDataInstance.SendData(0);
+    SendSocketData(buffer);
+    delay(500);
+    delete[] buffer;
+    // }
 }
 
 void StateController::SendSocketData(byte *buffer)
@@ -200,7 +207,7 @@ void StateController::SendSocketData(byte *buffer)
     Serial.print("Send Data: ");
     Serialization::printBytesAsHex(buffer, 37);
     Serial.println();
-    _dataSocket->SendText((char *)buffer, 34);
+    _dataSocket->SendText((const char *)buffer, 37);
 }
 
 fs::File StateController::OpenFile(const char *path)

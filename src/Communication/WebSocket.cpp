@@ -55,7 +55,7 @@ void WebSocket::EventHandler(void *handler_args, esp_event_base_t base, int32_t 
     case WEBSOCKET_EVENT_DATA:
         if (data->data_len != 0 && data->data_ptr != NULL)
         {
-            // DataQueue->enqueue((byte *)data->data_ptr, data->data_len);
+            DataQueue->enqueue((byte *)data->data_ptr, data->data_len);
             Serial.write(data->data_ptr, data->data_len);
             Serial.println();
         }

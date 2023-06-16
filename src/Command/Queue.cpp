@@ -1,41 +1,52 @@
 #include "Queue.h"
 
-Node::Node(byte* data, size_t length) : length(length), next(nullptr) {
+Node::Node(byte *data, size_t length) : length(length), next(nullptr)
+{
     this->data = new byte[length];
     memcpy(this->data, data, length);
 }
 
-Node::~Node() {
+Node::~Node()
+{
     delete[] data;
 }
 
 ByteQueue::ByteQueue() : front(nullptr), rear(nullptr) {}
 
-ByteQueue::~ByteQueue() {
-    Node* temp = front;
-    while (temp != nullptr) {
-        Node* next = temp->next;
+ByteQueue::~ByteQueue()
+{
+    Node *temp = front;
+    while (temp != nullptr)
+    {
+        Node *next = temp->next;
         delete temp;
         temp = next;
     }
 }
 
-bool ByteQueue::enqueue(byte* data, size_t length) {
-    Node* newNode = new Node(data, length);
-    
-    if (isEmpty()) {
+bool ByteQueue::enqueue(byte *data, size_t length)
+{
+    Node *newNode = new Node(data, length);
+
+    if (isEmpty())
+    {
         front = newNode;
         rear = newNode;
-    } else {
+    }
+    else
+    {
         rear->next = newNode;
         rear = newNode;
     }
+    Serial.println("Enqueued");
     return true;
 }
 
-QueueNodeData ByteQueue::dequeue() {
+QueueNodeData ByteQueue::dequeue()
+{
     QueueNodeData data;
-    if (isEmpty()) {
+    if (isEmpty())
+    {
         data.data = nullptr;
         data.length = 0;
         return data;
@@ -46,12 +57,13 @@ QueueNodeData ByteQueue::dequeue() {
 
     memcpy(data.data, temp->data, temp->length);
     data.length = temp->length;
-    
+
     front = front->next;
     delete temp;
     return data;
 }
 
-bool ByteQueue::isEmpty() const {
+bool ByteQueue::isEmpty() const
+{
     return front == nullptr;
 }

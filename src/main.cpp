@@ -27,12 +27,12 @@ void setup()
   DataQueue = new ByteQueue();
   Serial.println("Connected");
   _socketHandler = new WebSocket(URL, DataQueue);
-  state = new StateController(_socketHandler);
+  state = new StateController(_socketHandler, DataQueue);
   Serial.println("Established");
 }
 
 void loop()
 {
-  state->SendOnlineDataState();
+  state->OnlineState();
   delay(1000);
 }

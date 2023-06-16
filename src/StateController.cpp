@@ -10,9 +10,10 @@ void printBytesAsHex(const uint8_t *bytes, size_t length)
     std::cout << std::dec << std::setfill(' ') << std::endl;
 }
 
-StateController::StateController(WebSocket *DataSocket)
+StateController::StateController(WebSocket *DataSocket, ByteQueue *Queue)
 {
     _dataSocket = DataSocket;
+    _dataQueue = Queue;
     SendOnlineDataInstance.SetSocket(DataSocket);
     currentState = State::TelemeteryState;
 }
@@ -156,42 +157,38 @@ void StateController::AcceptPlanState()
 void StateController::OnlineState()
 {
     bool EndOnline = false;
-
+    QueueNodeData QueueNode;
     while (true)
     {
         if (EndOnline)
             break;
-        if (true)
-            EndOnline = ExecuteOnlineCommandState();
+        if (!_dataQueue->isEmpty())
+        {
+            QueueNode = _dataQueue->dequeue();
+            EndOnline = ExecuteOnlineCommandState(QueueNode.data);
+        }
         SendOnlineDataState();
         delay(50);
     }
 }
 
-bool StateController::ExecuteOnlineCommandState()
+bool StateController::ExecuteOnlineCommandState(byte *data)
 {
-    // byte *data;
     // StructHeader header = Serialization::DeserializeHeader(data);
     // if (header.Type == FrameType::Request)
     // {
-    //     ReceivedRequest(&header, &data[21]);
+    //     ReceivedRequest(&header, data[]);
     //     return true;
     // }
-    // ReceivedData(&header, &data[21], true);
+    StructHeader header;
+    header.Type = FrameType::Command;
+    ReceivedData(&header, data, true);
     return false;
 }
 
 void StateController::SendOnlineDataState()
 {
     byte *buffer = new byte[37];
-    // buffer[0] = 0x68;
-    // buffer[1] = 0x65;
-    // buffer[2] = 0x6C;
-    // buffer[3] = 0x00;
-    // buffer[4] = 0x00;
-    // Serial.println("Online State");
-    // _dataSocket->SendText((const char *)buffer, 5);
-    // _dataSocket->SendText((const char *)"Send Online Data", 16);
     // SendOnlineDataInstance.SendCamera();
     // for (int i = 0; i < 6; i++)
     // {
@@ -288,8 +285,8 @@ void StateController::SendImageTelemetry(int PlanID, byte SequenceID)
 bool StateController::ReceivedData(StructHeader *Header, byte *data, bool isOnline)
 {
     // check if the data is corrupted or not
-    if (!Serialization::isValidCRC(&data[21], Header->FrameLength, Header->CRC))
-        return false;
+    // if (!Serialization::isValidCRC(&data[21], Header->FrameLength, Header->CRC))
+    //     return false;
 
     if (Header->Type == FrameType::Plan)
     {

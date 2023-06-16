@@ -35,7 +35,7 @@ private:
     ExecuteOnlineCommand ExecuteOnlineCommandInstance;
     SendOnlineData SendOnlineDataInstance;
     WebSocket *_dataSocket;
-
+    ByteQueue *_dataQueue;
     // void printBytesAsHex(const uint8_t *bytes, size_t length);
 
 protected:
@@ -70,7 +70,7 @@ protected:
     void ReceivedRequest(StructHeader *Header, byte *buffer);
 
 public:
-    StateController(WebSocket *DataSocket);
+    StateController(WebSocket *DataSocket, ByteQueue *Queue);
     ~StateController();
 
     void SetupStateMachine();
@@ -79,7 +79,7 @@ public:
     void TelemeteryState();
     void AcceptPlanState();
     void OnlineState();
-    bool ExecuteOnlineCommandState();
+    bool ExecuteOnlineCommandState(byte *data);
     void SendOnlineDataState();
 };
 

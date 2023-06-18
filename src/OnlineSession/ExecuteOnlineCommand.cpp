@@ -18,30 +18,33 @@ void ExecuteOnlineCommand::RoverMovement(byte Buffer[])
         if (Command.CommandID == 0)
         {
             Serial.println("Forward");
-            // RoverMovement::Forward();
+            RoverMovement::Forward();
         }
         else if (Command.CommandID == 1)
         {
             Serial.println("Backward");
-            // RoverMovement::Backward();
+            RoverMovement::Backward();
         }
         else if (Command.CommandID == 2)
         {
             Serial.println("Right");
-            // RoverMovement::Right();
+            RoverMovement::Right();
         }
         else if (Command.CommandID == 3)
         {
             Serial.println("Left");
-            // RoverMovement::Left();
+            RoverMovement::Left();
         }
         else if (Command.CommandID == 4)
         {
             Serial.println("Stop");
-            // RoverMovement::Stop();
+            RoverMovement::Stop();
         }
         else if (Command.CommandID == 5)
-            RoverMovement::SelfDriving(5000);
+        {
+            Serial.println("Self-Driving");
+            RoverMovement::SelfDriving(30000);
+        }
 
         delay(Command.Delay * 500);
     }

@@ -14,7 +14,6 @@ StateController::StateController(WebSocket *DataSocket, ByteQueue *Queue)
 {
     _dataSocket = DataSocket;
     _dataQueue = Queue;
-    SendOnlineDataInstance.SetSocket(DataSocket);
     currentState = State::TelemeteryState;
 }
 
@@ -29,10 +28,7 @@ void StateController::TelemeteryState()
     bool TelemeteryImage = true;
 
     // Init Telemetery
-    byte *buffer = InitTelemeteryRequest();
-    SendSocketData(buffer);
-    delete[] buffer;
-    buffer = nullptr;
+    // byte *buffer = InitTelemeteryRequest();
 
     // Send All Telemetery
     while (true)
@@ -85,9 +81,7 @@ void StateController::TelemeteryState()
         {
             TelemeteryInstance.RemoveData(PlanFilePath.Plan5);
             TelemeteryInstance.CloseFile();
-            byte *buffer = EndTelemetryRequest();
-            SendSocketData(buffer);
-            delete[] buffer;
+            // byte *buffer = EndTelemetryRequest();
             break;
         }
         else
@@ -112,16 +106,9 @@ void StateController::AcceptPlanState()
     byte *data = new byte[64];
     while (true)
     {
-        if (ReceivedDataQueue())
+        if (!_dataQueue->isEmpty())
         {
-            data = AcceptPlanRequest();
-            SendSocketData(data);
-            delete[] data;
-            data = nullptr;
-            // data = Queue.Pop();
-
-            // ReceivedDataQueue();
-            // data = Queue.get();
+            data = _dataQueue->dequeue().data;
             StructHeader header = Serialization::DeserializeHeader(data);
             if (header.Type == FrameType::Request)
             {
@@ -134,17 +121,11 @@ void StateController::AcceptPlanState()
             {
                 if (!ReceivedData(&header, &data[21], false))
                 {
-                    byte *buffer = ResendPlanRequest();
-                    SendSocketData(buffer);
-                    delete[] buffer;
-                    buffer = nullptr;
+                    // byte *buffer = ResendPlanRequest();
                 }
                 else
                 {
-                    byte *buffer = DonePlanRequest();
-                    SendSocketData(buffer);
-                    delete[] buffer;
-                    buffer = nullptr;
+                    // byte *buffer = DonePlanRequest();
                 }
             }
             // delete[] data;
@@ -164,11 +145,11 @@ void StateController::OnlineState()
             break;
         if (!_dataQueue->isEmpty())
         {
+            Serial.println("Controller state: OnlineState");
             QueueNode = _dataQueue->dequeue();
             EndOnline = ExecuteOnlineCommandState(QueueNode.data);
         }
         SendOnlineDataState();
-        delay(50);
     }
 }
 
@@ -187,60 +168,21 @@ bool StateController::ExecuteOnlineCommandState(byte *data)
 }
 
 void StateController::SendOnlineDataState()
-{
-    byte *buffer = new byte[37];
+{ 
     // SendOnlineDataInstance.SendCamera();
-    // for (int i = 0; i < 6; i++)
-    // {
-    buffer = SendOnlineDataInstance.SendData(0);
-    SendSocketData(buffer);
-    delay(500);
-    delete[] buffer;
-    // }
-}
-
-void StateController::SendSocketData(byte *buffer)
-{
-    Serial.print("Send Data: ");
-    Serialization::printBytesAsHex(buffer, 37);
-    Serial.println();
-    _dataSocket->SendText((const char *)buffer, 37);
-}
-
-fs::File StateController::OpenFile(const char *path)
-{
-    // open file
-    SDCard::OpenRead(SD, path);
-    fs::File file = SDCard::GetFile();
-    return file;
-}
-
-void StateController::CloseFile(fs::File file)
-{
-    // close file
-    file.close();
-}
-
-void StateController::DeleteData(fs::File file, const char *path)
-{
-    // delete file
-    SDCard::RemoveFileData(path);
-    file.close();
-    SD.remove(path);
-}
-
-void StateController::CreateFile(const char *path)
-{
-    // create file
-    SDCard::OpenAppend(SD, path);
-    fs::File file = SDCard::GetFile();
-    file.close();
+    for (int i = 0; i < 6; i++)
+    {
+        byte *buffer = new byte[37];
+        buffer = SendOnlineDataInstance.SendData(i);
+        _dataSocket->SendText((const char *)buffer, 37);
+        delay(100);
+        delete[] buffer;
+    }
 }
 
 // Send Telemetery Data of the current plan in the opened file till the end of the file
 bool StateController::SendTelemetery(bool TelemeteryImage)
 {
-    // send telemetery
     byte *buffer = TelemeteryInstance.GetTelemetery();
     if (buffer == NULL)
     {
@@ -256,7 +198,8 @@ bool StateController::SendTelemetery(bool TelemeteryImage)
         SendImageTelemetry(PlanID, SequenceID);
     }
 
-    SendSocketData(buffer);
+    _dataSocket->SendText((const char *)buffer, 37);
+    delay(100);
     delete[] buffer;
     buffer = nullptr;
     return false;
@@ -313,24 +256,46 @@ void StateController::ReceivedRequest(StructHeader *Header, byte *data)
 {
 }
 
-byte *StateController::InitTelemeteryRequest()
+// byte *StateController::InitTelemeteryRequest()
+// {
+//     Serial.println("Init Telemetry");
+//     byte *buffer = new byte[4]{0, 69, 69, '\0'};
+//     return buffer;
+// }
+
+// byte *StateController::EndTelemetryRequest()
+// {
+//     Serial.println("End Telemetry");
+//     byte *buffer = new byte[4]{1, 69, 69, '\0'};
+//     return buffer;
+// }
+
+fs::File StateController::OpenFile(const char *path)
 {
-    Serial.println("Init Telemetry");
-    byte *buffer = new byte[4]{0, 69, 69, '\0'};
-    return buffer;
+    // open file
+    SDCard::OpenRead(SD, path);
+    fs::File file = SDCard::GetFile();
+    return file;
 }
 
-byte *StateController::EndTelemetryRequest()
+void StateController::CloseFile(fs::File file)
 {
-    Serial.println("End Telemetry");
-    byte *buffer = new byte[4]{1, 69, 69, '\0'};
-    return buffer;
+    // close file
+    file.close();
 }
 
-bool StateController::ReceivedDataQueue()
+void StateController::DeleteData(fs::File file, const char *path)
 {
-    // check if the queue is empty or not
-    // if not empty return true
-    // else return false
-    return false;
+    // delete file
+    SDCard::RemoveFileData(path);
+    file.close();
+    SD.remove(path);
+}
+
+void StateController::CreateFile(const char *path)
+{
+    // create file
+    SDCard::OpenAppend(SD, path);
+    fs::File file = SDCard::GetFile();
+    file.close();
 }

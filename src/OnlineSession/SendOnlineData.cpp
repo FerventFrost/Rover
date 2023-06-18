@@ -8,10 +8,6 @@ SendOnlineData::~SendOnlineData()
 {
 }
 
-void SendOnlineData::SetSocket(WebSocket *dataSocket)
-{
-    _dataSocket = dataSocket;
-}
 // use must delete the returned pointer
 byte *SendOnlineData::SendTemperature()
 {
@@ -19,15 +15,15 @@ byte *SendOnlineData::SendTemperature()
     byte *SensorDataSerialization = new byte[DATA_SIZE + SENSOR_ZERO_PADDING];
     byte *HeaderSerialization = new byte[HEADER_SIZE];
     byte *Concat = new byte[HEADER_SIZE + DATA_SIZE + SENSOR_ZERO_PADDING];
-    byte *testCopy = new byte[13];
+
     // Body Data
-    //  SensorData = Sensors::ReadTemp();
-    Data.PlanID = 7;
+    SensorData = Sensors::ReadTemp();
+    Data.PlanID = 0;
     Data.SequenceID = TEMPERATURE_ID;
     Data.Time = esp_timer_get_time();
-    Data.X = 50;
+    Data.X = SensorData.x;
     Data.Y = 0;
-    Data.Z = 1;
+    Data.Z = 0;
     SensorDataSerialization = Serialization::SerializeBodyData(&Data);
     // // Data Zero Padding
     for (int i = 0; i < SENSOR_ZERO_PADDING; i++)

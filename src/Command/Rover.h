@@ -3,15 +3,13 @@
 
 #include "Command\Sensors.h"
 #include <Arduino.h>
-#define BAHER_SIZE 21
+#define BAHER_SIZE 31
 #define ENA 5
 #define ENB 18
 #define MOTOR1 2
 #define MOTOR2 4
 #define MOTOR3 15
 #define MOTOR4 17
-#define ULTRASONIC_TRIG_PIN 13
-#define ULTRASONIC_ECHO_PIN 12
 
 class RoverMovement
 {

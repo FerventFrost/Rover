@@ -24,31 +24,32 @@ enum State
 class StateController
 {
 private:
+    Telemetery TelemeteryInstance;
+    AcceptData AcceptDataInstance;
+    ExecuteOnlineCommand ExecuteOnlineCommandInstance;
+    SendOnlineData SendOnlineDataInstance;
+
+    WebSocket *_dataSocket;
+    ByteQueue *_dataQueue;
     FilePath FilePaths;
+
     State currentState;
     byte Packet;
     byte Header;
     byte Command;
     fs::File File;
-    Telemetery TelemeteryInstance;
-    AcceptData AcceptDataInstance;
-    ExecuteOnlineCommand ExecuteOnlineCommandInstance;
-    SendOnlineData SendOnlineDataInstance;
-    WebSocket *_dataSocket;
-    ByteQueue *_dataQueue;
-    // void printBytesAsHex(const uint8_t *bytes, size_t length);
 
 protected:
     // Create Request Packet
-    byte *InitTelemeteryRequest();
-    byte *EndTelemetryRequest();
-    byte *InitAcceptPlanRequest();
-    byte *EndAcceptPlanRequest();
-    byte *InitOnlineRequest();
-    byte *EndOnlineRequest();
-    byte *AcceptPlanRequest();
-    byte *DonePlanRequest();
-    byte *ResendPlanRequest();
+    void _InitTelemeteryRequest();
+    void _EndTelemetryRequest();
+    void _InitAcceptPlanRequest();
+    void _EndAcceptPlanRequest();
+    void _InitOnlineRequest();
+    void _EndOnlineRequest();
+    void _AcceptPlanRequest();
+    void _DonePlanRequest();
+    void _ResendPlanRequest();
 
     // File Handling Methods
     fs::File OpenFile(const char *path);

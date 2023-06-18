@@ -4,7 +4,7 @@
 #include <Wire.h>
 #include "Arduino.h"
 
-#define DHT_PIN 15
+#define DHT_PIN 16
 #define DHT_TEMP 0
 #define DHT_HUMIDITY 1
 

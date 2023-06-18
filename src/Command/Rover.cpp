@@ -50,13 +50,11 @@ void RoverMovement::Stop()
 
 void RoverMovement::SelfDriving(uint32_t MoveTime)
 {
-    SensorsReading reading;
-    reading.x = BAHER_SIZE;
     unsigned long startTime = millis();
     int RightTimer = 0;
     while (millis() - startTime < MoveTime)
     {
-        if (reading.x < 25)
+        if (Sensors::Ultrasonic_Read().x < 25)
         {
             Serial.println("Obstacle Detected");
             Stop();
@@ -79,6 +77,5 @@ void RoverMovement::SelfDriving(uint32_t MoveTime)
             Forward();
             delay(33);
         }
-        reading = Sensors::Ultrasonic_Read();
     }
 }
